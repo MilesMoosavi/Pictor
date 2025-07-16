@@ -1,0 +1,11 @@
+# Ignore old concept folder and architecture doc
+GUI_Old_Concept/
+pictionary_bot_architecture.md
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# IDE/editor files
+.vscode/
+.DS_Store

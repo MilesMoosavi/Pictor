@@ -1,0 +1,5 @@
+mss>=9.0.1
+pygetwindow>=0.0.9
+pillow>=10.0.0
+opencv-python>=4.8.0
+pytesseract>=0.3.10
