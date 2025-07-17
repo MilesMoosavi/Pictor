@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pictor - Real-time Pictionary Assistant
+Pictor - Real-ti me Pictionary Assistant
 Entry point for the application
 """
 

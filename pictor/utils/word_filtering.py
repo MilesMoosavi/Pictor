@@ -224,3 +224,17 @@ class WordFilter:
     def get_selected_wordlists(self):
         """Get list of currently selected wordlist filenames"""
         return self.selected_files
+    
+    def get_words_from_file(self, filename):
+        """Get all words from a specific wordlist file"""
+        file_path = os.path.join(self.wordlists_folder, filename)
+        words = []
+        
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    words = [line.strip().lower() for line in f if line.strip()]
+            except Exception as e:
+                print(f"Error reading {filename}: {e}")
+                
+        return words
