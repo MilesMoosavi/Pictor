@@ -4,8 +4,12 @@ Real-time Pictionary assistant for drawing games.
 
 ## Features
 
-- Enter obfuscated word patterns or use screen-capture OCR (future).
-- Interactive GUI to select custom word lists and match patterns.
+- Enter obfuscated word patterns with real-time filtering and matching
+- Frame-based navigation with embedded settings (no popup windows)
+- Interactive word list selection with live preview and editing
+- Configurable capture area selection for future OCR integration
+- Persistent user word management (add/remove custom words)
+- Always-on-top mode for overlay usage during games
 
 ## Requirements
 
@@ -28,19 +32,25 @@ Real-time Pictionary assistant for drawing games.
 
 ## Screenshots
 
-Main window showing prefix search and full list:
+Main window with frame-based navigation and word filtering:
 
-![Main UI](screenshots/main_window.png)
+![Main UI](screenshots/main_navigation.png)
 
-Word list selection window with editable preview:
+Embedded settings - Wordbank configuration with live word counts:
 
-![List Selector](screenshots/list_selector.png)
+![Wordbank Settings](screenshots/settings_wordbank.png)
 
-Capture settings prototype (buttons not yet functional):
+Embedded settings - Capture area configuration with window preview:
 
-![Capture Selector](screenshots/capture_selector.png)
+![Capture Settings](screenshots/settings_capture.png)
 
-> **Note:** The following controls are currently placeholders and will be implemented in future updates:
-> - Recent Changes button
-> - Select Capture Area button
-> - Settings (⚙) button
+## Current Status
+
+The application now features:
+- ✅ Embedded settings system (no separate popup windows)
+- ✅ Frame-based navigation with consolidated settings
+- ✅ Live word filtering and pattern matching
+- ✅ Persistent wordbank management (integrated in settings)
+- ✅ Capture area configuration interface
+- 🔄 UI navigation cleanup (removing redundant tabs)
+- ⏳ OCR integration (planned)
