@@ -104,6 +104,20 @@ class SettingsWindow:
         # Navigation buttons
         self.nav_buttons = {}
         
+        # General Settings (first in list)
+        self.nav_buttons['general'] = tk.Button(
+            sidebar_frame,
+            text="⚙️ General",
+            command=self.show_general_settings,
+            font=('Arial', 11),
+            bg='#d0d0d0',
+            relief='flat',
+            pady=10,
+            anchor='w',
+            padx=20
+        )
+        self.nav_buttons['general'].pack(fill='x', pady=2)
+        
         # Wordbank Settings
         self.nav_buttons['wordbank'] = tk.Button(
             sidebar_frame,
@@ -132,33 +146,24 @@ class SettingsWindow:
         )
         self.nav_buttons['capture'].pack(fill='x', pady=2)
         
-        # Placeholder for future settings
-        future_label = tk.Label(
-            sidebar_frame,
-            text="\\n\\nMore settings\\ncoming soon...",
-            font=('Arial', 9, 'italic'),
-            bg='#e0e0e0',
-            fg='#666666'
-        )
-        future_label.pack(pady=20)
-        
         # Right content area
         self.content_frame = tk.Frame(main_frame, bg='#f0f0f0')
         self.content_frame.pack(side='right', fill='both', expand=True)
         
-        # Bottom buttons
-        button_frame = tk.Frame(self.window, bg='#f0f0f0')
-        button_frame.pack(fill='x', padx=10, pady=(0, 10))
-        
-        close_btn = tk.Button(
-            button_frame,
-            text="Close",
-            command=self.window.destroy,
-            font=('Arial', 10),
-            padx=20,
-            pady=5
-        )
-        close_btn.pack(side='right')
+        # Bottom buttons (only for popup mode)
+        if not self.embedded:
+            button_frame = tk.Frame(self.window, bg='#f0f0f0')
+            button_frame.pack(fill='x', padx=10, pady=(0, 10))
+            
+            close_btn = tk.Button(
+                button_frame,
+                text="Close",
+                command=self.window.destroy,
+                font=('Arial', 10),
+                padx=20,
+                pady=5
+            )
+            close_btn.pack(side='right')
         
     def clear_content(self):
         """Clear the content frame"""
@@ -172,6 +177,57 @@ class SettingsWindow:
                 button.config(bg='#4CAF50', fg='white')
             else:
                 button.config(bg='#d0d0d0', fg='black')
+                
+    def show_general_settings(self):
+        """Show general application settings"""
+        self.clear_content()
+        self.set_active_button('general')
+        
+        # Create title
+        title_label = tk.Label(
+            self.content_frame,
+            text="General Settings",
+            font=('Arial', 16, 'bold'),
+            bg='#f0f0f0'
+        )
+        title_label.pack(pady=(20, 10))
+        
+        # Description
+        desc_label = tk.Label(
+            self.content_frame,
+            text="Configure general application settings",
+            font=('Arial', 10),
+            bg='#f0f0f0',
+            fg='#666666'
+        )
+        desc_label.pack(pady=(0, 20))
+        
+        # Settings container
+        settings_container = tk.Frame(self.content_frame, bg='#f0f0f0')
+        settings_container.pack(fill='both', expand=True, padx=20)
+        
+        # Always on Top setting
+        always_on_top_frame = tk.Frame(settings_container, bg='#f0f0f0')
+        always_on_top_frame.pack(fill='x', pady=10)
+        
+        always_on_top_cb = tk.Checkbutton(
+            always_on_top_frame,
+            text="Always on Top",
+            variable=self.app.always_on_top_var,
+            command=self.on_always_on_top_changed,
+            font=('Arial', 11),
+            bg='#f0f0f0'
+        )
+        always_on_top_cb.pack(anchor='w')
+        
+        # Description for always on top
+        tk.Label(
+            always_on_top_frame,
+            text="Keep the application window above all other windows",
+            font=('Arial', 9),
+            bg='#f0f0f0',
+            fg='#666666'
+        ).pack(anchor='w', padx=(25, 0))
                 
     def show_wordbank_settings(self):
         """Show wordbank settings panel with embedded controls"""
@@ -507,6 +563,15 @@ class SettingsWindow:
             self.summary_label.config(text=f"Total selected words: {total_words}")
             
     # ===============================
+    
+    # General Settings Handler Methods
+    # ===============================
+    
+    def on_always_on_top_changed(self):
+        """Handle always on top checkbox changes"""
+        if hasattr(self.app, 'root'):
+            self.app.root.attributes('-topmost', self.app.always_on_top_var.get())
+    
     # Capture Settings Handler Methods
     # ===============================
     

@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from ..utils.word_filtering import WordFilter
-from .debug_window import DebugWindow
 
 
 class WordListSelectionWindow:
@@ -221,23 +220,58 @@ class WordMatcherWindow:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Word Matcher")
-        self.root.geometry("700x550")
+        self.root.geometry("900x700")  # Increased default size for full settings visibility
         self.root.configure(bg='#f0f0f0')
-        
+
         # Initialize word filter
         self.word_filter = WordFilter()
-        
-        # Initialize debug window for development
-        self.debug_window = None
-        self.init_debug_window()
-        
+
         # Frame management
         self.current_frame = None
         self.frames = {}
-        
+
+        # Always on top variable (now managed through settings)
+        self.always_on_top_var = tk.BooleanVar()
+
+        # Track last key event for focus logic
+        self._last_key_was_tab = False
+        self.root.bind_all('<KeyPress>', self._on_any_keypress, add='+')
+
         self.setup_navigation()
         self.setup_frames()
         self.show_frame('main')
+
+        # Set up focus events for auto-focus on input
+        self.setup_focus_events()
+
+        # Set up keyboard shortcuts
+        self.setup_keyboard_shortcuts()
+
+    def _on_any_keypress(self, event):
+        # Track if Tab or Shift+Tab was pressed
+        if event.keysym == 'Tab':
+            self._last_key_was_tab = True
+        else:
+            self._last_key_was_tab = False
+        
+    def setup_keyboard_shortcuts(self):
+        """Set up global keyboard shortcuts"""
+        # Ctrl+R to restart app
+        self.root.bind('<Control-r>', lambda e: self.on_restart_app())
+        self.root.bind('<Control-R>', lambda e: self.on_restart_app())
+
+        # Ctrl+C to copy selected word to clipboard
+        self.root.bind('<Control-c>', lambda e: self.on_copy_selected())
+        self.root.bind('<Control-C>', lambda e: self.on_copy_selected())
+
+        # Ctrl+F to focus search input box
+        self.root.bind('<Control-f>', lambda e: self.focus_search_input())
+        self.root.bind('<Control-F>', lambda e: self.focus_search_input())
+
+    def focus_search_input(self):
+        """Focus the search input box (word_entry)"""
+        if hasattr(self, 'word_entry') and self.word_entry.winfo_exists():
+            self.word_entry.focus_set()
         
     def setup_navigation(self):
         """Create the navigation bar at the top"""
@@ -260,50 +294,62 @@ class WordMatcherWindow:
         )
         self.main_nav_btn.pack(side='left', padx=2)
         
-        self.settings_nav_btn = tk.Button(
+        # Recent Changes button next to Main
+        self.recent_changes_btn = tk.Button(
             nav_buttons_frame,
-            text="Settings",
-            command=lambda: self.show_frame('settings'),
+            text="Recent Changes",
+            command=self.on_recent_changes,
             relief='flat',
             bg='#e0e0e0',
+            fg='black',
             padx=15
         )
-        self.settings_nav_btn.pack(side='left', padx=2)
+        self.recent_changes_btn.pack(side='left', padx=2)
         
-        self.wordlists_nav_btn = tk.Button(
+        # Dev Tools button next to Recent Changes
+        self.dev_tools_btn = tk.Button(
             nav_buttons_frame,
-            text="Word Lists",
-            command=lambda: self.show_frame('wordlists'),
+            text="Dev Tools",
+            command=self.on_dev_tools,
             relief='flat',
             bg='#e0e0e0',
+            fg='black',
             padx=15
         )
-        self.wordlists_nav_btn.pack(side='left', padx=2)
+        self.dev_tools_btn.pack(side='left', padx=2)
         
-        # Right side controls (always on top, debug)
+        # Right side controls (settings)
         right_nav_frame = tk.Frame(self.nav_frame, bg='#d0d0d0')
         right_nav_frame.pack(side='right', padx=10, pady=5)
-        
-        self.always_on_top_var = tk.BooleanVar()
-        self.always_on_top_cb = tk.Checkbutton(
-            right_nav_frame,
-            text="Always on Top",
-            variable=self.always_on_top_var,
-            command=self.on_always_on_top,
-            bg='#d0d0d0'
-        )
-        self.always_on_top_cb.pack(side='right', padx=5)
-        
-        # Debug button (still opens separate window)
-        self.debug_btn = tk.Button(
+
+        # Settings button (wrench icon opens settings)
+        self.settings_btn = tk.Button(
             right_nav_frame,
             text="🔧",
-            command=self.on_open_debug,
+            command=self.on_open_settings,
             font=('Arial', 12),
             width=3,
             relief='raised'
         )
-        self.debug_btn.pack(side='right', padx=5)
+        self.settings_btn.pack(side='right', padx=5)
+        
+    def setup_focus_events(self):
+        """Set up focus events for auto-focus functionality"""
+        # Only bind click events for background auto-focus
+        self.root.bind('<Button-1>', self.on_window_click)
+        
+    # Removed on_window_focus_in: no longer needed for auto-focus
+            
+    def on_window_click(self, event=None):
+        """Handle window clicks - maintain focus on input for easy typing only if background is clicked"""
+        # Only if we're on main frame and clicked outside the input area
+        if (event and self.current_frame == 'main' and 
+            hasattr(self, 'word_entry') and 
+            self.word_entry.winfo_exists()):
+            clicked_widget = event.widget
+            # Only focus input if background (container or parent_frame) is clicked
+            if clicked_widget == self.container or clicked_widget == self.frames['main']:
+                self.root.after(10, lambda: self.word_entry.focus_set())
         
     def setup_frames(self):
         """Initialize all the main frames"""
@@ -316,9 +362,6 @@ class WordMatcherWindow:
         
         # Settings frame (embedded settings)
         self.frames['settings'] = self.create_settings_frame()
-        
-        # Word lists frame (embedded word list selection)
-        self.frames['wordlists'] = self.create_wordlists_frame()
         
     def show_frame(self, frame_name):
         """Show the specified frame and hide others"""
@@ -335,17 +378,11 @@ class WordMatcherWindow:
         
     def update_nav_buttons(self, active_frame):
         """Update navigation button visual states"""
-        buttons = {
-            'main': self.main_nav_btn,
-            'settings': self.settings_nav_btn, 
-            'wordlists': self.wordlists_nav_btn
-        }
-        
-        for name, btn in buttons.items():
-            if name == active_frame:
-                btn.config(bg='#4CAF50', fg='white')
-            else:
-                btn.config(bg='#e0e0e0', fg='black')
+        # Only 'main' frame has a navigation button now
+        if active_frame == 'main':
+            self.main_nav_btn.config(bg='#4CAF50', fg='white')
+        else:
+            self.main_nav_btn.config(bg='#e0e0e0', fg='black')
                 
     def create_main_frame(self):
         """Create the main functionality frame"""
@@ -366,37 +403,31 @@ class WordMatcherWindow:
         
         return settings_frame
         
-    def create_wordlists_frame(self):
-        """Create the embedded word lists frame"""
-        wordlists_frame = tk.Frame(self.container, bg='#f0f0f0')
-        
-        # Create embedded word list selection UI
-        self.setup_wordlists_ui(wordlists_frame)
-        
-        return wordlists_frame
-        
     def setup_main_ui(self, parent_frame):
         """Create the main UI elements"""
         
-        # Top frame with buttons
-        top_frame = tk.Frame(parent_frame, bg='#f0f0f0')
-        top_frame.pack(fill='x', padx=10, pady=5)
+        # Results listbox (moved to top)
+        results_frame = tk.Frame(parent_frame, bg='#f0f0f0')
+        results_frame.pack(fill='both', expand=True, padx=10, pady=10)
         
-        # Left side buttons
-        left_buttons_frame = tk.Frame(top_frame, bg='#f0f0f0')
-        left_buttons_frame.pack(side='left')
+        # Create listbox with scrollbar
+        listbox_frame = tk.Frame(results_frame)
+        listbox_frame.pack(fill='both', expand=True)
         
-        self.recent_changes_btn = tk.Button(
-            left_buttons_frame,
-            text="Recent Changes", 
-            command=self.on_recent_changes,
-            relief='raised',
-            padx=15, pady=5
+        self.results_listbox = tk.Listbox(
+            listbox_frame,
+            font=('Arial', 11),
+            height=15
         )
-        self.recent_changes_btn.pack(side='left', padx=5)
         
-        # Remove the old separate navigation controls since they're now in nav bar
-        # Word input frame
+        scrollbar = tk.Scrollbar(listbox_frame, orient='vertical')
+        self.results_listbox.configure(yscrollcommand=scrollbar.set)
+        scrollbar.configure(command=self.results_listbox.yview)
+        
+        self.results_listbox.pack(side='left', fill='both', expand=True)
+        scrollbar.pack(side='right', fill='y')
+        
+        # Word input frame (moved to bottom)
         input_frame = tk.Frame(parent_frame, bg='#f0f0f0')
         input_frame.pack(fill='x', padx=10, pady=10)
         
@@ -418,6 +449,10 @@ class WordMatcherWindow:
         )
         self.word_entry.pack(side='left', padx=5)
         self.word_entry.bind('<KeyRelease>', self.on_word_changed)
+        self.word_entry.bind('<FocusIn>', self.on_entry_focus_in)
+        self.word_entry.bind('<Up>', self.on_entry_arrow_up)
+        self.word_entry.bind('<Down>', self.on_entry_arrow_down)
+        self.word_entry.bind('<Return>', self.on_entry_enter)
         
         # Length display
         self.length_label = tk.Label(
@@ -447,27 +482,6 @@ class WordMatcherWindow:
         )
         self.minus_btn.pack(side='left', padx=2)
         
-        # Results listbox
-        results_frame = tk.Frame(parent_frame, bg='#f0f0f0')
-        results_frame.pack(fill='both', expand=True, padx=10, pady=5)
-        
-        # Create listbox with scrollbar
-        listbox_frame = tk.Frame(results_frame)
-        listbox_frame.pack(fill='both', expand=True)
-        
-        self.results_listbox = tk.Listbox(
-            listbox_frame,
-            font=('Arial', 11),
-            height=15
-        )
-        
-        scrollbar = tk.Scrollbar(listbox_frame, orient='vertical')
-        self.results_listbox.configure(yscrollcommand=scrollbar.set)
-        scrollbar.configure(command=self.results_listbox.yview)
-        
-        self.results_listbox.pack(side='left', fill='both', expand=True)
-        scrollbar.pack(side='right', fill='y')
-        
         # Status bar
         self.status_bar = tk.Label(
             parent_frame,
@@ -481,164 +495,162 @@ class WordMatcherWindow:
         # Populate initial results (show all words)
         self.filter_words('')
         
+        # Set initial focus to input box
+        self.root.after(100, lambda: self.word_entry.focus_set())
+        
+    def on_entry_focus_in(self, event=None):
+        """Handle input box gaining focus - select all text for easy replacement"""
+        if self.word_entry.get():  # Only select if there's text
+            self.word_entry.select_range(0, tk.END)
+            
+    def on_entry_arrow_up(self, event=None):
+        """Handle up arrow in input - navigate results list"""
+        if hasattr(self, 'results_listbox'):
+            current_selection = self.results_listbox.curselection()
+            if current_selection:
+                current_index = current_selection[0]
+                if current_index > 0:
+                    self.results_listbox.selection_clear(0, tk.END)
+                    self.results_listbox.selection_set(current_index - 1)
+                    self.results_listbox.see(current_index - 1)
+            else:
+                # No selection, select last item
+                last_index = self.results_listbox.size() - 1
+                if last_index >= 0:
+                    self.results_listbox.selection_set(last_index)
+                    self.results_listbox.see(last_index)
+        return 'break'  # Prevent default behavior
+        
+    def on_entry_arrow_down(self, event=None):
+        """Handle down arrow in input - navigate results list"""
+        if hasattr(self, 'results_listbox'):
+            current_selection = self.results_listbox.curselection()
+            if current_selection:
+                current_index = current_selection[0]
+                max_index = self.results_listbox.size() - 1
+                if current_index < max_index:
+                    self.results_listbox.selection_clear(0, tk.END)
+                    self.results_listbox.selection_set(current_index + 1)
+                    self.results_listbox.see(current_index + 1)
+            else:
+                # No selection, select first item
+                if self.results_listbox.size() > 0:
+                    self.results_listbox.selection_set(0)
+                    self.results_listbox.see(0)
+        return 'break'  # Prevent default behavior
+        
+    def on_entry_enter(self, event=None):
+        """Handle Enter key in input - copy selected word to clipboard or select first result, with workaround for selection jumping bug"""
+        if hasattr(self, 'results_listbox'):
+            # Temporarily unbind KeyRelease to prevent interference
+            self.word_entry.unbind('<KeyRelease>')
+
+            current_selection = self.results_listbox.curselection()
+            if current_selection:
+                selected_word = self.results_listbox.get(current_selection[0])
+                self.root.clipboard_clear()
+                self.root.clipboard_append(selected_word)
+                self.status_bar.config(text=f"Copied '{selected_word}' to clipboard")
+            else:
+                if self.results_listbox.size() > 0:
+                    self.results_listbox.selection_set(0)
+                    self.results_listbox.see(0)
+
+            # Re-bind KeyRelease after a delay, but only if input still exists
+            def rebind_if_exists():
+                if hasattr(self, 'word_entry') and self.word_entry.winfo_exists():
+                    self.word_entry.bind('<KeyRelease>', self.on_word_changed)
+            self.root.after(150, rebind_if_exists)
+        return 'break'  # Prevent default behavior
+        
+    def on_copy_selected(self, event=None):
+        """Handle Ctrl+C - copy selected word to clipboard, with workaround for selection jumping bug"""
+        if (hasattr(self, 'results_listbox') and self.current_frame == 'main'):
+            # Temporarily unbind KeyRelease to prevent interference
+            self.word_entry.unbind('<KeyRelease>')
+
+            current_selection = self.results_listbox.curselection()
+            if current_selection:
+                selected_word = self.results_listbox.get(current_selection[0])
+                self.root.clipboard_clear()
+                self.root.clipboard_append(selected_word)
+                self.status_bar.config(text=f"Copied '{selected_word}' to clipboard")
+            else:
+                if self.results_listbox.size() > 0:
+                    self.results_listbox.selection_set(0)
+                    self.results_listbox.see(0)
+                    selected_word = self.results_listbox.get(0)
+                    self.root.clipboard_clear()
+                    self.root.clipboard_append(selected_word)
+                    self.status_bar.config(text=f"Copied '{selected_word}' to clipboard")
+
+            # Re-bind KeyRelease after a delay, but only if input still exists
+            def rebind_if_exists():
+                if hasattr(self, 'word_entry') and self.word_entry.winfo_exists():
+                    self.word_entry.bind('<KeyRelease>', self.on_word_changed)
+            self.root.after(150, rebind_if_exists)
+            return 'break'  # Prevent default Ctrl+C behavior
+
+        # If not on main frame or no results, allow default Ctrl+C behavior
+        return None
+            
     # TODO: Pin recent changes feature for future implementation (placeholder for LLM)
     def on_recent_changes(self):
         """Handle Recent Changes button click (to be implemented)"""
         messagebox.showinfo("Recent Changes", "Feature coming soon: recent changes log")
         
-    def on_always_on_top(self):
-        """Handle always on top checkbox"""
-        self.root.attributes('-topmost', self.always_on_top_var.get())
+    def on_dev_tools(self):
+        """Show developer tools menu"""
+        # Create a popup menu
+        dev_menu = tk.Menu(self.root, tearoff=0)
         
-    def on_open_debug(self):
-        """Open the debug window (still separate)"""
-        if self.debug_window:
-            self.debug_window.show()
+        # Add menu items
+        dev_menu.add_command(label=" Restart App", command=self.on_restart_app)
+        dev_menu.add_command(label="📋 Recent Changes", command=self.on_recent_changes)
+        
+        # Show the menu at the button location
+        try:
+            # Get button position
+            x = self.dev_tools_btn.winfo_rootx()
+            y = self.dev_tools_btn.winfo_rooty() + self.dev_tools_btn.winfo_height()
+            dev_menu.post(x, y)
+        except Exception as e:
+            print(f"[DEBUG] Failed to show dev tools menu: {e}")
+            # Fallback - just show recent changes
+            self.on_recent_changes()
             
+    def on_restart_app(self):
+        """Restart the application (dev tool)"""
+        try:
+            import subprocess
+            import sys
+            import os
+            
+            # Close current window
+            self.root.destroy()
+            
+            # Restart the application
+            if getattr(sys, 'frozen', False):
+                # Running as compiled executable
+                subprocess.Popen([sys.executable])
+            else:
+                # Running as Python script
+                subprocess.Popen([sys.executable] + sys.argv)
+            
+        except Exception as e:
+            print(f"[DEBUG] Failed to restart application: {e}")
+            messagebox.showerror("Error", f"Failed to restart application: {e}")
+        
     def on_open_settings(self):
         """Navigate to settings frame instead of opening window"""
         self.show_frame('settings')
         
-    def on_select_word_lists(self):
-        """Navigate to word lists frame instead of opening window"""
-        self.show_frame('wordlists')
-    
-    def setup_wordlists_ui(self, parent_frame):
-        """Create the embedded word lists selection UI"""
-        # Title
-        title_label = tk.Label(
-            parent_frame,
-            text="Word List Selection",
-            font=('Arial', 16, 'bold'),
-            bg='#f0f0f0'
-        )
-        title_label.pack(pady=20)
-        
-        # Main container with two panes
-        main_paned = tk.PanedWindow(parent_frame, orient=tk.HORIZONTAL, bg='#f0f0f0')
-        main_paned.pack(fill='both', expand=True, padx=20, pady=10)
-        
-        # Left pane - checkboxes
-        left_frame = tk.Frame(main_paned, bg='#f0f0f0')
-        main_paned.add(left_frame, minsize=300)
-        
-        tk.Label(
-            left_frame,
-            text="Select Word Lists:",
-            font=('Arial', 11, 'bold'),
-            bg='#f0f0f0'
-        ).pack(anchor='w', pady=(0, 10))
-        
-        # Scrollable checkbox area
-        checkbox_frame = tk.Frame(left_frame, bg='#f0f0f0')
-        checkbox_frame.pack(fill='both', expand=True)
-        
-        # Get wordlist info
-        wordlist_info = self.word_filter.get_wordlist_info()
-        self.wordlist_check_vars = {}
-        
-        for filename, info in wordlist_info.items():
-            var = tk.BooleanVar()
-            var.set(info['selected'])
-            self.wordlist_check_vars[filename] = var
-            
-            cb = tk.Checkbutton(
-                checkbox_frame,
-                text=f"{filename} ({info['count']} words)",
-                variable=var,
-                command=self.on_wordlist_selection_changed,
-                bg='#f0f0f0',
-                anchor='w'
-            )
-            cb.pack(fill='x', pady=2)
-        
-        # Right pane - preview
-        right_frame = tk.Frame(main_paned, bg='#f0f0f0')
-        main_paned.add(right_frame, minsize=350)
-        
-        tk.Label(
-            right_frame,
-            text="Word Preview:",
-            font=('Arial', 11, 'bold'),
-            bg='#f0f0f0'
-        ).pack(anchor='w', pady=(0, 10))
-        
-        # Scrollable text area for preview
-        text_frame = tk.Frame(right_frame, bg='#f0f0f0')
-        text_frame.pack(fill='both', expand=True)
-        
-        # Scrollbars
-        v_scrollbar = tk.Scrollbar(text_frame, orient='vertical')
-        h_scrollbar = tk.Scrollbar(text_frame, orient='horizontal')
-        
-        self.wordlist_preview_text = tk.Text(
-            text_frame,
-            font=('Arial', 9),
-            wrap='none',
-            yscrollcommand=v_scrollbar.set,
-            xscrollcommand=h_scrollbar.set
-        )
-        
-        v_scrollbar.config(command=self.wordlist_preview_text.yview)
-        h_scrollbar.config(command=self.wordlist_preview_text.xview)
-        
-        # Pack scrollbars and text widget
-        v_scrollbar.pack(side='right', fill='y')
-        h_scrollbar.pack(side='bottom', fill='x')
-        self.wordlist_preview_text.pack(side='left', fill='both', expand=True)
-        
-        # Update initial preview
-        self.update_wordlist_preview()
-        
-    def on_wordlist_selection_changed(self):
-        """Handle wordlist checkbox selection changes"""
-        # Get selected files
-        selected_files = [
-            filename for filename, var in self.wordlist_check_vars.items()
-            if var.get()
-        ]
-        
-        # Update word filter
-        self.word_filter.update_selected_wordlists(selected_files)
-        
-        # Update preview
-        self.update_wordlist_preview()
-        
-        # Update status bar in main view
-        if hasattr(self, 'status_bar'):
-            self.status_bar.config(text=f"Ready - {self.word_filter.get_word_count()} words loaded")
-        
-    def update_wordlist_preview(self):
-        """Update the word list preview"""
-        # Get selected files
-        selected_files = [
-            filename for filename, var in self.wordlist_check_vars.items()
-            if var.get()
-        ]
-        
-        if not selected_files:
-            self.wordlist_preview_text.delete(1.0, tk.END)
-            self.wordlist_preview_text.insert(1.0, "No word lists selected")
-            return
-            
-        # Get words from selected lists
-        words = []
-        for filename in selected_files:
-            file_words = self.word_filter.get_words_from_file(filename)
-            words.extend(file_words)
-        
-        # Remove duplicates and sort
-        words = sorted(list(set(words)))
-        
-        # Update text widget
-        self.wordlist_preview_text.delete(1.0, tk.END)
-        self.wordlist_preview_text.insert(1.0, '\n'.join(words[:1000]))  # Limit to first 1000 for performance
-        
-        if len(words) > 1000:
-            self.wordlist_preview_text.insert(tk.END, f"\n\n... and {len(words) - 1000} more words")
-            
     def on_word_changed(self, event=None):
         """Handle word input changes"""
+        # Ignore arrow key releases to prevent interfering with navigation
+        if event and event.keysym in ('Up', 'Down'):
+            return
+            
         word = self.word_entry.get()
         self.length_label.config(text=str(len(word)))
         self.filter_words(word)
@@ -702,15 +714,6 @@ class WordMatcherWindow:
         current_pattern = self.word_entry.get()
         self.filter_words(current_pattern)
         self.status_bar.config(text=f"Wordlists updated - {self.word_filter.get_word_count()} words loaded")
-    
-    def init_debug_window(self):
-        """Initialize the debug window for development"""
-        try:
-            self.debug_window = DebugWindow()
-            print("[DEBUG] Debug window initialized")
-        except Exception as e:
-            print(f"[DEBUG] Failed to initialize debug window: {e}")
-            self.debug_window = None
     
     def run(self):
         """Start the application"""
