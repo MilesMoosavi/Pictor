@@ -1,6 +1,7 @@
 # Ignore old concept folder and architecture doc
 GUI_Old_Concept/
 pictionary_bot_architecture.md
+TODO.md
 
 # Python bytecode
 __pycache__/
