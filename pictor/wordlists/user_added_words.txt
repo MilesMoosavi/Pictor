@@ -1192,3 +1192,5 @@ megaphone
 megalodon
 pliers
 cabin
+frisbee
+helicopter

@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from .capture_settings import CaptureSettingsWindow
-
+from pictor.gui import WordMatcherWindow
+from pictor.gui.settings.general_settings_panel import GeneralSettingsPanel
+from pictor.gui.settings.wordbank_settings_panel import WordbankSettingsPanel
+from pictor.gui.settings.capture_settings_panel import CaptureSettingsPanel
 
 class SettingsWindow:
     """Consolidated settings window with tabbed interface"""
@@ -183,342 +186,354 @@ class SettingsWindow:
         self.clear_content()
         self.set_active_button('general')
         
-        # Create title
-        title_label = tk.Label(
-            self.content_frame,
-            text="General Settings",
-            font=('Arial', 16, 'bold'),
-            bg='#f0f0f0'
-        )
-        title_label.pack(pady=(20, 10))
+        # New implementation using the panel class
+        general_panel = GeneralSettingsPanel(self.content_frame, self.app)
+        general_panel.pack(fill='both', expand=True)
+
+        # # Create title
+        # title_label = tk.Label(
+        #     self.content_frame,
+        #     text="General Settings",
+        #     font=('Arial', 16, 'bold'),
+        #     bg='#f0f0f0'
+        # )
+        # title_label.pack(pady=(20, 10))
         
-        # Description
-        desc_label = tk.Label(
-            self.content_frame,
-            text="Configure general application settings",
-            font=('Arial', 10),
-            bg='#f0f0f0',
-            fg='#666666'
-        )
-        desc_label.pack(pady=(0, 20))
+        # # Description
+        # desc_label = tk.Label(
+        #     self.content_frame,
+        #     text="Configure general application settings",
+        #     font=('Arial', 10),
+        #     bg='#f0f0f0',
+        #     fg='#666666'
+        # )
+        # desc_label.pack(pady=(0, 20))
         
-        # Settings container
-        settings_container = tk.Frame(self.content_frame, bg='#f0f0f0')
-        settings_container.pack(fill='both', expand=True, padx=20)
+        # # Settings container
+        # settings_container = tk.Frame(self.content_frame, bg='#f0f0f0')
+        # settings_container.pack(fill='both', expand=True, padx=20)
         
-        # Always on Top setting
-        always_on_top_frame = tk.Frame(settings_container, bg='#f0f0f0')
-        always_on_top_frame.pack(fill='x', pady=10)
+        # # Always on Top setting
+        # always_on_top_frame = tk.Frame(settings_container, bg='#f0f0f0')
+        # always_on_top_frame.pack(fill='x', pady=10)
         
-        always_on_top_cb = tk.Checkbutton(
-            always_on_top_frame,
-            text="Always on Top",
-            variable=self.app.always_on_top_var,
-            command=self.on_always_on_top_changed,
-            font=('Arial', 11),
-            bg='#f0f0f0'
-        )
-        always_on_top_cb.pack(anchor='w')
+        # always_on_top_cb = tk.Checkbutton(
+        #     always_on_top_frame,
+        #     text="Always on Top",
+        #     variable=self.app.always_on_top_var,
+        #     command=self.on_always_on_top_changed,
+        #     font=('Arial', 11),
+        #     bg='#f0f0f0'
+        # )
+        # always_on_top_cb.pack(anchor='w')
         
-        # Description for always on top
-        tk.Label(
-            always_on_top_frame,
-            text="Keep the application window above all other windows",
-            font=('Arial', 9),
-            bg='#f0f0f0',
-            fg='#666666'
-        ).pack(anchor='w', padx=(25, 0))
+        # # Description for always on top
+        # tk.Label(
+        #     always_on_top_frame,
+        #     text="Keep the application window above all other windows",
+        #     font=('Arial', 9),
+        #     bg='#f0f0f0',
+        #     fg='#666666'
+        # ).pack(anchor='w', padx=(25, 0))
                 
     def show_wordbank_settings(self):
         """Show wordbank settings panel with embedded controls"""
         self.clear_content()
         self.set_active_button('wordbank')
         
-        # Create title
-        title_label = tk.Label(
-            self.content_frame,
-            text="Wordbank Settings",
-            font=('Arial', 16, 'bold'),
-            bg='#f0f0f0'
-        )
-        title_label.pack(pady=(20, 10))
+        # New implementation using the panel class
+        wordbank_panel = WordbankSettingsPanel(self.content_frame, self.app)
+        wordbank_panel.pack(fill='both', expand=True)
+
+        # # Create title
+        # title_label = tk.Label(
+        #     self.content_frame,
+        #     text="Wordbank Settings",
+        #     font=('Arial', 16, 'bold'),
+        #     bg='#f0f0f0'
+        # )
+        # title_label.pack(pady=(20, 10))
         
-        # Description
-        desc_label = tk.Label(
-            self.content_frame,
-            text="Configure word lists and wordbank settings",
-            font=('Arial', 10),
-            bg='#f0f0f0',
-            fg='#666666'
-        )
-        desc_label.pack(pady=(0, 20))
+        # # Description
+        # desc_label = tk.Label(
+        #     self.content_frame,
+        #     text="Configure word lists and wordbank settings",
+        #     font=('Arial', 10),
+        #     bg='#f0f0f0',
+        #     fg='#666666'
+        # )
+        # desc_label.pack(pady=(0, 20))
         
-        # Create scrollable frame for word list controls
-        canvas = tk.Canvas(self.content_frame, bg='#f0f0f0')
-        scrollbar = tk.Scrollbar(self.content_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg='#f0f0f0')
+        # # Create scrollable frame for word list controls
+        # canvas = tk.Canvas(self.content_frame, bg='#f0f0f0')
+        # scrollbar = tk.Scrollbar(self.content_frame, orient="vertical", command=canvas.yview)
+        # scrollable_frame = tk.Frame(canvas, bg='#f0f0f0')
         
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
+        # scrollable_frame.bind(
+        #     "<Configure>",
+        #     lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        # )
         
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
+        # canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        # canvas.configure(yscrollcommand=scrollbar.set)
         
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        # canvas.pack(side="left", fill="both", expand=True)
+        # scrollbar.pack(side="right", fill="y")
         
-        # Word list selection checkboxes (embedded here directly)
-        selection_label = tk.Label(
-            scrollable_frame,
-            text="Select Word Lists:",
-            font=('Arial', 12, 'bold'),
-            bg='#f0f0f0'
-        )
-        selection_label.pack(anchor='w', padx=20, pady=(10, 5))
+        # # Word list selection checkboxes (embedded here directly)
+        # selection_label = tk.Label(
+        #     scrollable_frame,
+        #     text="Select Word Lists:",
+        #     font=('Arial', 12, 'bold'),
+        #     bg='#f0f0f0'
+        # )
+        # selection_label.pack(anchor='w', padx=20, pady=(10, 5))
         
-        # Get word filter from parent if available
-        if hasattr(self.app, 'word_filter'):
-            wordlist_info = self.app.word_filter.get_wordlist_info()
-            self.check_vars = {}
+        # # Get word filter from parent if available
+        # if hasattr(self.app, 'word_filter'):
+        #     wordlist_info = self.app.word_filter.get_wordlist_info()
+        #     self.check_vars = {}
             
-            checkbox_frame = tk.Frame(scrollable_frame, bg='#f0f0f0')
-            checkbox_frame.pack(fill='x', padx=20, pady=5)
+        #     checkbox_frame = tk.Frame(scrollable_frame, bg='#f0f0f0')
+        #     checkbox_frame.pack(fill='x', padx=20, pady=5)
             
-            for filename, info in wordlist_info.items():
-                var = tk.BooleanVar(value=info['selected'])
-                self.check_vars[filename] = var
+        #     for filename, info in wordlist_info.items():
+        #         var = tk.BooleanVar(value=info['selected'])
+        #         self.check_vars[filename] = var
                 
-                # Create checkbox with word count
-                chk_text = f"{filename} ({info['count']} words)"
-                # Need to use a function factory for proper lambda with filename binding
-                def make_cmd_func(fname=filename):
-                    return lambda: self.on_wordlist_selection_changed(fname)
+        #         # Create checkbox with word count
+        #         chk_text = f"{filename} ({info['count']} words)"
+        #         # Need to use a function factory for proper lambda with filename binding
+        #         def make_cmd_func(fname=filename):
+        #             return lambda: self.on_wordlist_selection_changed(fname)
                     
-                chk = tk.Checkbutton(
-                    checkbox_frame,
-                    text=chk_text,
-                    variable=var,
-                    command=make_cmd_func(),
-                    bg='#f0f0f0',
-                    anchor='w',
-                    font=('Arial', 10)
-                )
-                chk.pack(fill='x', pady=2)
+        #         chk = tk.Checkbutton(
+        #             checkbox_frame,
+        #             text=chk_text,
+        #             variable=var,
+        #             command=make_cmd_func(),
+        #             bg='#f0f0f0',
+        #             anchor='w',
+        #             font=('Arial', 10)
+        #         )
+        #         chk.pack(fill='x', pady=2)
             
-            # Word count summary (track single label)
-            total_words = sum(info['count'] for info in wordlist_info.values() if info['selected'])
-            self.summary_label = tk.Label(
-                scrollable_frame,
-                text=f"Total selected words: {total_words}",
-                font=('Arial', 10, 'bold'),
-                bg='#f0f0f0',
-                fg='#2196F3',
-                name="summary_label"
-            )
-            self.summary_label.pack(anchor='w', padx=20, pady=10)
-        else:
-            # No word filter available
-            no_filter_label = tk.Label(
-                scrollable_frame,
-                text="Word filter not available",
-                font=('Arial', 10),
-                bg='#f0f0f0',
-                fg='#666666'
-            )
-            no_filter_label.pack(anchor='w', padx=20, pady=10)
+        #     # Word count summary (track single label)
+        #     total_words = sum(info['count'] for info in wordlist_info.values() if info['selected'])
+        #     self.summary_label = tk.Label(
+        #         scrollable_frame,
+        #         text=f"Total selected words: {total_words}",
+        #         font=('Arial', 10, 'bold'),
+        #         bg='#f0f0f0',
+        #         fg='#2196F3',
+        #         name="summary_label"
+        #     )
+        #     self.summary_label.pack(anchor='w', padx=20, pady=10)
+        # else:
+        #     # No word filter available
+        #     no_filter_label = tk.Label(
+        #         scrollable_frame,
+        #         text="Word filter not available",
+        #         font=('Arial', 10),
+        #         bg='#f0f0f0',
+        #         fg='#666666'
+        #     )
+        #     no_filter_label.pack(anchor='w', padx=20, pady=10)
         
     def show_capture_settings(self):
         """Show capture settings panel"""
         self.clear_content()
         self.set_active_button('capture')
         
-        # Create title
-        title_label = tk.Label(
-            self.content_frame,
-            text="Capture Settings",
-            font=('Arial', 16, 'bold'),
-            bg='#f0f0f0'
-        )
-        title_label.pack(pady=(20, 10))
+        # New implementation using the panel class
+        capture_panel = CaptureSettingsPanel(self.content_frame, self.app)
+        capture_panel.pack(fill='both', expand=True)
+
+        # # Create title
+        # title_label = tk.Label(
+        #     self.content_frame,
+        #     text="Capture Settings",
+        #     font=('Arial', 16, 'bold'),
+        #     bg='#f0f0f0'
+        # )
+        # title_label.pack(pady=(20, 10))
         
-        # Description
-        desc_label = tk.Label(
-            self.content_frame,
-            text="Configure screen capture and monitoring settings",
-            font=('Arial', 10),
-            bg='#f0f0f0',
-            fg='#666666'
-        )
-        desc_label.pack(pady=(0, 20))
+        # # Description
+        # desc_label = tk.Label(
+        #     self.content_frame,
+        #     text="Configure screen capture and monitoring settings",
+        #     font=('Arial', 10),
+        #     bg='#f0f0f0',
+        #     fg='#666666'
+        # )
+        # desc_label.pack(pady=(0, 20))
         
-        # --- Inline capture settings controls ---
-        # Window selection
-        window_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
-        window_frame.pack(fill='x', padx=10, pady=5)
+        # # --- Inline capture settings controls ---
+        # # Window selection
+        # window_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
+        # window_frame.pack(fill='x', padx=10, pady=5)
         
-        tk.Label(
-            window_frame,
-            text="Window:",
-            bg='#f0f0f0',
-            font=('Arial', 9)
-        ).pack(anchor='w')
+        # tk.Label(
+        #     window_frame,
+        #     text="Window:",
+        #     bg='#f0f0f0',
+        #     font=('Arial', 9)
+        # ).pack(anchor='w')
         
-        # Window dropdown
-        dropdown_frame = tk.Frame(window_frame, bg='#f0f0f0')
-        dropdown_frame.pack(fill='x', pady=2)
+        # # Window dropdown
+        # dropdown_frame = tk.Frame(window_frame, bg='#f0f0f0')
+        # dropdown_frame.pack(fill='x', pady=2)
         
-        self.window_var = tk.StringVar()
-        self.window_dropdown = ttk.Combobox(
-            dropdown_frame,
-            textvariable=self.window_var,
-            state='readonly',
-            width=50
-        )
-        self.window_dropdown.pack(side='left', fill='x', expand=True)
+        # self.window_var = tk.StringVar()
+        # self.window_dropdown = ttk.Combobox(
+        #     dropdown_frame,
+        #     textvariable=self.window_var,
+        #     state='readonly',
+        #     width=50
+        # )
+        # self.window_dropdown.pack(side='left', fill='x', expand=True)
         
-        # Refresh button
-        self.refresh_btn = tk.Button(
-            dropdown_frame,
-            text="↻",
-            command=self.on_refresh_windows,
-            font=('Arial', 12),
-            width=3
-        )
-        self.refresh_btn.pack(side='right', padx=(5, 0))
+        # # Refresh button
+        # self.refresh_btn = tk.Button(
+        #     dropdown_frame,
+        #     text="↻",
+        #     command=self.on_refresh_windows,
+        #     font=('Arial', 12),
+        #     width=3
+        # )
+        # self.refresh_btn.pack(side='right', padx=(5, 0))
         
-        # Window match priority
-        priority_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
-        priority_frame.pack(fill='x', padx=10, pady=5)
+        # # Window match priority
+        # priority_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
+        # priority_frame.pack(fill='x', padx=10, pady=5)
         
-        tk.Label(
-            priority_frame,
-            text="Window Match Priority:",
-            bg='#f0f0f0',
-            font=('Arial', 9)
-        ).pack(side='left')
+        # tk.Label(
+        #     priority_frame,
+        #     text="Window Match Priority:",
+        #     bg='#f0f0f0',
+        #     font=('Arial', 9)
+        # ).pack(side='left')
         
-        self.priority_var = tk.StringVar(value="Match title")
-        priority_dropdown = ttk.Combobox(
-            priority_frame,
-            textvariable=self.priority_var,
-            values=["Match title", "Match exact window", "Match any window"],
-            state='readonly',
-            width=20
-        )
-        priority_dropdown.pack(side='right')
+        # self.priority_var = tk.StringVar(value="Match title")
+        # priority_dropdown = ttk.Combobox(
+        #     priority_frame,
+        #     textvariable=self.priority_var,
+        #     values=["Match title", "Match exact window", "Match any window"],
+        #     state='readonly',
+        #     width=20
+        # )
+        # priority_dropdown.pack(side='right')
         
-        # Preview area
-        preview_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
-        preview_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        # # Preview area
+        # preview_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
+        # preview_frame.pack(fill='both', expand=True, padx=10, pady=10)
         
-        tk.Label(
-            preview_frame,
-            text="Preview:",
-            bg='#f0f0f0',
-            font=('Arial', 9)
-        ).pack(anchor='w')
+        # tk.Label(
+        #     preview_frame,
+        #     text="Preview:",
+        #     bg='#f0f0f0',
+        #     font=('Arial', 9)
+        # ).pack(anchor='w')
         
-        # Preview canvas (shows scaled window rectangle)
-        self.preview_canvas = tk.Canvas(
-            preview_frame,
-            bg='#ccc',  # light gray background
-            height=200,
-            relief='flat',  # remove border
-            borderwidth=0,  # no border
-            highlightthickness=0  # remove focus highlight
-        )
-        self.preview_canvas.pack(fill='both', expand=True, pady=5)
-        # draw static gray placeholder and enable drag-select on canvas
-        self.preview_canvas.bind('<Configure>', self.draw_placeholder)
-        self.preview_canvas.bind('<ButtonPress-1>', self.on_canvas_press)
-        self.preview_canvas.bind('<B1-Motion>',    self.on_canvas_drag)
-        self.preview_canvas.bind('<ButtonRelease-1>', self.on_canvas_release)
-        # initial draw
-        self.preview_canvas.event_generate('<Configure>')
+        # # Preview canvas (shows scaled window rectangle)
+        # self.preview_canvas = tk.Canvas(
+        #     preview_frame,
+        #     bg='#ccc',  # light gray background
+        #     height=200,
+        #     relief='flat',  # remove border
+        #     borderwidth=0,  # no border
+        #     highlightthickness=0  # remove focus highlight
+        # )
+        # self.preview_canvas.pack(fill='both', expand=True, pady=5)
+        # # draw static gray placeholder and enable drag-select on canvas
+        # self.preview_canvas.bind('<Configure>', self.draw_placeholder)
+        # self.preview_canvas.bind('<ButtonPress-1>', self.on_canvas_press)
+        # self.preview_canvas.bind('<B1-Motion>',    self.on_canvas_drag)
+        # self.preview_canvas.bind('<ButtonRelease-1>', self.on_canvas_release)
+        # # initial draw
+        # self.preview_canvas.event_generate('<Configure>')
         
-        # Configured Coordinates display (below preview)
-        coords_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
-        coords_frame.pack(fill='x', padx=10, pady=(5,0))
-        tk.Label(
-            coords_frame,
-            text="Configured Coordinates:",
-            bg='#f0f0f0',
-            font=('Arial', 9)
-        ).pack(side='left')
-        self.coords_label = tk.Label(
-            coords_frame,
-            text="None",
-            bg='#f0f0f0',
-            font=('Arial', 9, 'bold')
-        )
-        self.coords_label.pack(side='left', padx=5)
+        # # Configured Coordinates display (below preview)
+        # coords_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
+        # coords_frame.pack(fill='x', padx=10, pady=(5,0))
+        # tk.Label(
+        #     coords_frame,
+        #     text="Configured Coordinates:",
+        #     bg='#f0f0f0',
+        #     font=('Arial', 9)
+        # ).pack(side='left')
+        # self.coords_label = tk.Label(
+        #     coords_frame,
+        #     text="None",
+        #     bg='#f0f0f0',
+        #     font=('Arial', 9, 'bold')
+        # )
+        # self.coords_label.pack(side='left', padx=5)
         
-        # Bottom controls
-        bottom_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
-        bottom_frame.pack(fill='x', padx=10, pady=5)
+        # # Bottom controls
+        # bottom_frame = tk.Frame(self.content_frame, bg='#f0f0f0')
+        # bottom_frame.pack(fill='x', padx=10, pady=5)
         
-        # Start/Stop monitoring
-        self.monitor_btn = tk.Button(
-            bottom_frame,
-            text="Start Monitoring",
-            command=self.on_toggle_monitoring,
-            bg='#4CAF50',
-            fg='white',
-            font=('Arial', 10),
-            padx=20
-        )
-        self.monitor_btn.pack(side='left')
+        # # Start/Stop monitoring
+        # self.monitor_btn = tk.Button(
+        #     bottom_frame,
+        #     text="Start Monitoring",
+        #     command=self.on_toggle_monitoring,
+        #     bg='#4CAF50',
+        #     fg='white',
+        #     font=('Arial', 10),
+        #     padx=20
+        # )
+        # self.monitor_btn.pack(side='left')
         
-        # Select Capture Area toggle button
-        self.select_area_btn = tk.Button(
-            bottom_frame,
-            text="Enable Selection Mode",
-            command=self.on_select_area,
-            font=('Arial', 10),
-            padx=15
-        )
-        self.select_area_btn.pack(side='left', padx=(5,0))
+        # # Select Capture Area toggle button
+        # self.select_area_btn = tk.Button(
+        #     bottom_frame,
+        #     text="Enable Selection Mode",
+        #     command=self.on_select_area,
+        #     font=('Arial', 10),
+        #     padx=15
+        # )
+        # self.select_area_btn.pack(side='left', padx=(5,0))
         
-        # Capture rate
-        rate_frame = tk.Frame(bottom_frame, bg='#f0f0f0')
-        rate_frame.pack(side='right')
+        # # Capture rate
+        # rate_frame = tk.Frame(bottom_frame, bg='#f0f0f0')
+        # rate_frame.pack(side='right')
         
-        tk.Label(
-            rate_frame,
-            text="Capture Rate:",
-            bg='#f0f0f0',
-            font=('Arial', 9)
-        ).pack(side='left')
+        # tk.Label(
+        #     rate_frame,
+        #     text="Capture Rate:",
+        #     bg='#f0f0f0',
+        #     font=('Arial', 9)
+        # ).pack(side='left')
         
-        self.rate_var = tk.DoubleVar(value=1.0)
-        self.rate_scale = tk.Scale(
-            rate_frame,
-            variable=self.rate_var,
-            from_=0.1,
-            to=5.0,
-            resolution=0.1,
-            orient='horizontal',
-            length=100,
-            bg='#f0f0f0'
-        )
-        self.rate_scale.pack(side='left', padx=5)
+        # self.rate_var = tk.DoubleVar(value=1.0)
+        # self.rate_scale = tk.Scale(
+        #     rate_frame,
+        #     variable=self.rate_var,
+        #     from_=0.1,
+        #     to=5.0,
+        #     resolution=0.1,
+        #     orient='horizontal',
+        #     length=100,
+        #     bg='#f0f0f0'
+        # )
+        # self.rate_scale.pack(side='left', padx=5)
         
-        tk.Label(
-            rate_frame,
-            text="FPS",
-            bg='#f0f0f0',
-            font=('Arial', 9)
-        ).pack(side='left')
+        # tk.Label(
+        #     rate_frame,
+        #     text="FPS",
+        #     bg='#f0f0f0',
+        #     font=('Arial', 9)
+        # ).pack(side='left')
         
-        # Populate window list and bind selection event
-        self.populate_windows()
-        self.window_dropdown.bind('<<ComboboxSelected>>', lambda e: (
-            self.print_selected_window_dims(), 
-            self.preview_canvas.event_generate('<Configure>') if self.preview_canvas else None,
-            print("[DEBUG] Window selection changed - redrawing preview")
-        ))
+        # # Populate window list and bind selection event
+        # self.populate_windows()
+        # self.window_dropdown.bind('<<ComboboxSelected>>', lambda e: (
+        #     self.print_selected_window_dims(), 
+        #     self.preview_canvas.event_generate('<Configure>') if self.preview_canvas else None,
+        #     print("[DEBUG] Window selection changed - redrawing preview")
+        # ))
         
     def open_word_list_selection(self):
         """Open the word list selection window"""
@@ -534,33 +549,33 @@ class SettingsWindow:
         from .capture_settings import CaptureSettingsWindow
         capture_window = CaptureSettingsWindow(self.tk_parent)
         
-    def on_wordlist_selection_changed(self, filename=None):
-        """Handle wordlist selection changes"""
-        if hasattr(self.app, 'word_filter') and hasattr(self, 'check_vars'):
-            # Update word filter based on checkbox states
-            selected_lists = []
-            for fname, var in self.check_vars.items():
-                if var.get():
-                    selected_lists.append(fname)
+    # def on_wordlist_selection_changed(self, filename=None):
+    #     """Handle wordlist selection changes"""
+    #     if hasattr(self.app, 'word_filter') and hasattr(self, 'check_vars'):
+    #         # Update word filter based on checkbox states
+    #         selected_lists = []
+    #         for fname, var in self.check_vars.items():
+    #             if var.get():
+    #                 selected_lists.append(fname)
             
-            # Update the word filter
-            self.app.word_filter.update_selected_wordlists(selected_lists)
+    #         # Update the word filter
+    #         self.app.word_filter.update_selected_wordlists(selected_lists)
             
-            # Refresh the parent if callback exists
-            if hasattr(self.app, '_on_wordlists_updated'):
-                self.app._on_wordlists_updated()
+    #         # Refresh the parent if callback exists
+    #         if hasattr(self.app, '_on_wordlists_updated'):
+    #             self.app._on_wordlists_updated()
                 
-            # Update word count display
-            self.refresh_wordcount_display()
+    #         # Update word count display
+    #         self.refresh_wordcount_display()
             
-    def refresh_wordcount_display(self):
-        """Refresh the word count display"""
-        # Update the tracked summary label text
-        if hasattr(self, 'summary_label'):
-            # Calculate updated total selected words
-            wordlist_info = self.app.word_filter.get_wordlist_info()
-            total_words = sum(info['count'] for info in wordlist_info.values() if info['selected'])
-            self.summary_label.config(text=f"Total selected words: {total_words}")
+    # def refresh_wordcount_display(self):
+    #     """Refresh the word count display"""
+    #     # Update the tracked summary label text
+    #     if hasattr(self, 'summary_label'):
+    #         # Calculate updated total selected words
+    #         wordlist_info = self.app.word_filter.get_wordlist_info()
+    #         total_words = sum(info['count'] for info in wordlist_info.values() if info['selected'])
+    #         self.summary_label.config(text=f"Total selected words: {total_words}")
             
     # ===============================
     
