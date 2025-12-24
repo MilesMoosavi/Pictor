@@ -1194,3 +1194,8 @@ pliers
 cabin
 frisbee
 helicopter
+person
+clear
+fourth of july
+pyramid of giza
+present

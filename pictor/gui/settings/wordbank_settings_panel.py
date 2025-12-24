@@ -3,6 +3,7 @@ Wordbank Settings Panel for Pictor Settings Window
 """
 import tkinter as tk
 from tkinter import ttk
+import os
 
 class WordbankSettingsPanel(tk.Frame):
     """A frame that contains the wordbank settings controls."""
@@ -96,18 +97,40 @@ class WordbankSettingsPanel(tk.Frame):
                 name="summary_label"
             )
             self.summary_label.pack(anchor='w', padx=20, pady=10)
-            self.refresh_wordcount_display()
-        else:
-            # No word filter available
-            no_filter_label = tk.Label(
+            
+            # Editable wordlist selection
+            editable_label = tk.Label(
                 scrollable_frame,
-                text="Word filter not available",
-                font=('Arial', 10),
-                bg='#f0f0f0',
-                fg='#666666'
+                text="Editable Wordlist (for + / - buttons):",
+                font=('Arial', 12, 'bold'),
+                bg='#f0f0f0'
             )
-            no_filter_label.pack(anchor='w', padx=20, pady=10)
-
+            editable_label.pack(anchor='w', padx=20, pady=(10, 5))
+            
+            self.editable_var = tk.StringVar(value=self.app.settings.get('editable_wordlist', 'user_added_words.txt'))
+            editable_options = self.app.word_filter.available_files
+            self.editable_dropdown = ttk.Combobox(
+                scrollable_frame,
+                textvariable=self.editable_var,
+                values=editable_options,
+                state='readonly',
+                width=30
+            )
+            self.editable_dropdown.pack(anchor='w', padx=20, pady=(0, 10))
+            self.editable_dropdown.bind('<<ComboboxSelected>>', self.on_editable_wordlist_changed)
+            
+            # Add Open Wordlists Folder button directly after summary label
+            open_wordlists_btn = tk.Button(
+                scrollable_frame,
+                text="Open Wordlists Folder",
+                font=('Arial', 10),
+                padx=10,
+                pady=5,
+                command=self.app.open_wordlists_folder if hasattr(self.app, 'open_wordlists_folder') else None
+            )
+            open_wordlists_btn.pack(anchor='e', padx=20, pady=(0, 10))
+            self.refresh_wordcount_display()
+            
     def on_wordlist_selection_changed(self, filename=None):
         """Handle wordlist selection changes."""
         if hasattr(self.app, 'word_filter'):
@@ -118,6 +141,15 @@ class WordbankSettingsPanel(tk.Frame):
                 self.app._on_wordlists_updated()
                 
             self.refresh_wordcount_display()
+            
+    def on_editable_wordlist_changed(self, event=None):
+        """Handle editable wordlist selection change."""
+        selected = self.editable_var.get()
+        self.app.settings.set('editable_wordlist', selected)
+        # Update the word filter's user_words_file
+        wordlists_folder = self.app.word_filter.wordlists_folder
+        new_user_words_file = os.path.join(wordlists_folder, selected)
+        self.app.word_filter.user_words_file = new_user_words_file
             
     def refresh_wordcount_display(self):
         """Refresh the word count display."""

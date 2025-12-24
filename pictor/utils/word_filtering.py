@@ -6,9 +6,9 @@ import json
 class WordFilter:
     """Handles word filtering and pattern matching with persistent user wordlists"""
     
-    def __init__(self, wordlists_folder=None):
+    def __init__(self, wordlists_folder=None, user_words_file=None):
         self.wordlists_folder = wordlists_folder or self._get_wordlists_folder()
-        self.user_words_file = os.path.join(self.wordlists_folder, "user_added_words.txt")
+        self.user_words_file = user_words_file or os.path.join(self.wordlists_folder, "user_added_words.txt")
         self.settings_file = os.path.join(os.path.dirname(self.wordlists_folder), "settings.json")
         
         # Initialize available wordlist files
@@ -104,12 +104,13 @@ class WordFilter:
         
         return wordlist_info
     
-    def filter_words(self, pattern):
+    def filter_words(self, pattern, exact_length=False):
         """
         Filter word list based on pattern with underscores
         
         Args:
             pattern (str): Pattern like "d___i" where _ represents unknown letters
+            exact_length (bool): If True, match exact length; if False, allow longer matches
             
         Returns:
             list: Matching words
@@ -120,15 +121,22 @@ class WordFilter:
         # If pattern contains no wildcards, do prefix matching
         if '_' not in pattern:
             try:
-                # Escape pattern and match any continuation
-                regex = re.compile(f"^{re.escape(pattern)}.*$", re.IGNORECASE)
+                # Escape pattern and match continuation based on exact_length
+                if exact_length:
+                    regex = re.compile(f"^{re.escape(pattern)}$", re.IGNORECASE)
+                else:
+                    regex = re.compile(f"^{re.escape(pattern)}.*$", re.IGNORECASE)
                 return [word for word in self.word_list if regex.match(word)]
             except re.error:
                 return []
         # Otherwise treat _ as single-character wildcard
         regex_pattern = pattern.replace('_', '.')
         try:
-            regex = re.compile(f"^{regex_pattern}$", re.IGNORECASE)
+            # Match words based on exact_length
+            if exact_length:
+                regex = re.compile(f"^{regex_pattern}$", re.IGNORECASE)
+            else:
+                regex = re.compile(f"^{regex_pattern}.*$", re.IGNORECASE)
             return [word for word in self.word_list if regex.match(word)]
         except re.error:
             return []

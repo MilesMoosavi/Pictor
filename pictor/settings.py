@@ -9,6 +9,7 @@ DEFAULT_SETTINGS = {
     "last_search_pattern": "",
     "last_selected_result_index": 0,
     "selected_wordlists": ["user_added_words.txt"],
+    "editable_wordlist": "user_added_words.txt",
     "theme": "light",
     "keyboard_shortcuts": {},
 }
