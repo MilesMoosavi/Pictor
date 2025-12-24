@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pictor - Real-ti me Pictionary Assistant
+Pictor - Real-time Pictionary Assistant
 Entry point for the application
 """
 
@@ -11,7 +11,7 @@ import os
 project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
-from pictor.gui import WordMatcherWindow
+from pictor.gui.main.main_window import WordMatcherWindow
 
 
 def main():

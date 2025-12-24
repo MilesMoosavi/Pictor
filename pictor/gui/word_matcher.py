@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import os
 from ..utils.word_filtering import WordFilter
+from ..settings import SettingsManager
 
 
 class WordListSelectionWindow:
@@ -220,11 +222,20 @@ class WordMatcherWindow:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Word Matcher")
-        self.root.geometry("900x700")  # Increased default size for full settings visibility
+        self.root.geometry("550x200+0+0")  # Always open in top-left of primary monitor
         self.root.configure(bg='#f0f0f0')
 
+        # Set a minimum window size to protect the query area
+        self.root.minsize(550, 200)  # Set minimum width to 550px
+
+        # Initialize settings
+        self.settings = SettingsManager()
+
         # Initialize word filter
-        self.word_filter = WordFilter()
+        editable_file = self.settings.get('editable_wordlist', 'user_added_words.txt') or 'user_added_words.txt'
+        wordlists_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "wordlists")
+        user_words_path = os.path.join(wordlists_folder, editable_file)
+        self.word_filter = WordFilter(user_words_file=user_words_path)
 
         # Frame management
         self.current_frame = None
@@ -232,6 +243,9 @@ class WordMatcherWindow:
 
         # Always on top variable (now managed through settings)
         self.always_on_top_var = tk.BooleanVar()
+
+        # Exact length match toggle
+        self.exact_length_match = False
 
         # Track last key event for focus logic
         self._last_key_was_tab = False
@@ -267,6 +281,24 @@ class WordMatcherWindow:
         # Ctrl+F to focus search input box
         self.root.bind('<Control-f>', lambda e: self.focus_search_input())
         self.root.bind('<Control-F>', lambda e: self.focus_search_input())
+
+        # Ctrl+/ to toggle exact length matching
+        self.root.bind('<Control-slash>', lambda e: self.toggle_exact_length_match())
+        self.root.bind('<Control-question>', lambda e: self.toggle_exact_length_match())  # Shift+Ctrl+/
+
+    def toggle_exact_length_match(self):
+        """Toggle exact length matching mode"""
+        self.exact_length_match = not self.exact_length_match
+        # Refresh the current search results
+        current_pattern = self.word_entry.get()
+        self.filter_words(current_pattern)
+
+    def open_wordlists_folder(self):
+        """Open the wordlists folder in file explorer"""
+        import os
+        # Get absolute path to wordlists folder
+        wordlists_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'wordlists'))
+        os.startfile(wordlists_path)
 
     def focus_search_input(self):
         """Focus the search input box (word_entry)"""
@@ -360,20 +392,16 @@ class WordMatcherWindow:
         # Main frame (current functionality)
         self.frames['main'] = self.create_main_frame()
         
-        # Settings frame (embedded settings)
-        self.frames['settings'] = self.create_settings_frame()
+        # No embedded settings frame; settings will open as a popup
         
     def show_frame(self, frame_name):
-        """Show the specified frame and hide others"""
-        # Hide current frame
+        """Show the specified frame and hide others (settings frame removed)"""
+        if frame_name not in self.frames:
+            return
         if self.current_frame:
             self.frames[self.current_frame].pack_forget()
-            
-        # Show new frame
         self.frames[frame_name].pack(fill='both', expand=True)
         self.current_frame = frame_name
-        
-        # Update navigation button states
         self.update_nav_buttons(frame_name)
         
     def update_nav_buttons(self, active_frame):
@@ -393,22 +421,29 @@ class WordMatcherWindow:
         
         return main_frame
         
-    def create_settings_frame(self):
-        """Create the embedded settings frame"""
-        settings_frame = tk.Frame(self.container, bg='#f0f0f0')
-        
-        # Import and create embedded settings
-        from .settings_window import SettingsWindow
-        self.embedded_settings = SettingsWindow(self, settings_frame, embedded=True)
-        
-        return settings_frame
+    # Removed create_settings_frame; settings now only opens as a popup
         
     def setup_main_ui(self, parent_frame):
         """Create the main UI elements"""
         
-        # Results listbox (moved to top)
+        # Word input frame (packed first with side='bottom' so it stays visible)
+        input_frame = tk.Frame(parent_frame, bg='#f0f0f0')
+        input_frame.pack(side='bottom', fill='x', padx=10, pady=10)
+        
+        # Status bar (packed second from bottom)
+        self.status_bar = tk.Label(
+            parent_frame,
+            text="Ready",
+            relief='sunken',
+            anchor='w',
+            bg='#f0f0f0',
+            font=('Arial', 9)
+        )
+        self.status_bar.pack(side='bottom', fill='x')
+        
+        # Results listbox (fills remaining space, shrinks first)
         results_frame = tk.Frame(parent_frame, bg='#f0f0f0')
-        results_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        results_frame.pack(side='top', fill='both', expand=True, padx=10, pady=10)
         
         # Create listbox with scrollbar
         listbox_frame = tk.Frame(results_frame)
@@ -427,13 +462,10 @@ class WordMatcherWindow:
         self.results_listbox.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
         
-        # Word input frame (moved to bottom)
-        input_frame = tk.Frame(parent_frame, bg='#f0f0f0')
-        input_frame.pack(fill='x', padx=10, pady=10)
-        
+        # Set up input frame contents
         tk.Label(
             input_frame, 
-            text="Enter obfuscated word (e.g. dr_w_ng, r__, _d):",
+            text="Enter obfuscated word (e.g. dr_w_ng):",
             bg='#f0f0f0',
             font=('Arial', 10)
         ).pack(side='left')
@@ -445,22 +477,20 @@ class WordMatcherWindow:
         self.word_entry = tk.Entry(
             word_input_frame,
             font=('Arial', 12),
-            width=20
+            width=17
         )
-        self.word_entry.pack(side='left', padx=5)
+        self.word_entry.pack(side='left', padx=1)
         self.word_entry.bind('<KeyRelease>', self.on_word_changed)
         self.word_entry.bind('<FocusIn>', self.on_entry_focus_in)
         self.word_entry.bind('<Up>', self.on_entry_arrow_up)
         self.word_entry.bind('<Down>', self.on_entry_arrow_down)
         self.word_entry.bind('<Return>', self.on_entry_enter)
         
-        # Length display
+        # Length display as plain text
         self.length_label = tk.Label(
             word_input_frame,
-            text="0",
-            bg='white',
-            relief='sunken',
-            width=3,
+            text="",
+            bg='#f0f0f0',
             font=('Arial', 10)
         )
         self.length_label.pack(side='left', padx=5)
@@ -482,16 +512,9 @@ class WordMatcherWindow:
         )
         self.minus_btn.pack(side='left', padx=2)
         
-        # Status bar
-        self.status_bar = tk.Label(
-            parent_frame,
-            text=f"Ready - {self.word_filter.get_word_count()} words loaded",
-            relief='sunken',
-            anchor='w',
-            bg='#f0f0f0',
-            font=('Arial', 9)
-        )
-        self.status_bar.pack(side='bottom', fill='x')
+        # Update status bar text
+        self.status_bar.config(text=f"Ready - {self.word_filter.get_word_count()} words loaded")
+        
         # Populate initial results (show all words)
         self.filter_words('')
         
@@ -626,10 +649,7 @@ class WordMatcherWindow:
             import sys
             import os
             
-            # Close current window
-            self.root.destroy()
-            
-            # Restart the application
+            # Restart the application first
             if getattr(sys, 'frozen', False):
                 # Running as compiled executable
                 subprocess.Popen([sys.executable])
@@ -637,22 +657,28 @@ class WordMatcherWindow:
                 # Running as Python script
                 subprocess.Popen([sys.executable] + sys.argv)
             
+            # Then close current window
+            self.root.destroy()
+            
         except Exception as e:
             print(f"[DEBUG] Failed to restart application: {e}")
             messagebox.showerror("Error", f"Failed to restart application: {e}")
         
     def on_open_settings(self):
-        """Navigate to settings frame instead of opening window"""
-        self.show_frame('settings')
+        """Open the settings window as a popup"""
+        from .settings_window import SettingsWindow
+        SettingsWindow(self, self.root, embedded=False)
         
     def on_word_changed(self, event=None):
         """Handle word input changes"""
         # Ignore arrow key releases to prevent interfering with navigation
         if event and event.keysym in ('Up', 'Down'):
             return
-            
+
         word = self.word_entry.get()
-        self.length_label.config(text=str(len(word)))
+        # Calculate per-word lengths
+        word_lengths = [str(len(w)) for w in word.split()]
+        self.length_label.config(text=", ".join(word_lengths))
         self.filter_words(word)
         
     def on_length_plus(self):
@@ -688,23 +714,43 @@ class WordMatcherWindow:
         self.root.after(450, lambda: self.word_entry.config(bg=original_bg))
     
     def filter_words(self, pattern):
-        """Filter word list based on pattern"""
+        """Filter word list based on pattern and sort results by length (shortest to longest)"""
+        # Remember the currently selected word before clearing
+        selected_word = None
+        selection = self.results_listbox.curselection()
+        if selection:
+            selected_word = self.results_listbox.get(selection[0])
+
         self.results_listbox.delete(0, tk.END)
-        
+
         # Determine matches: prefix or wildcard search, or show all if empty
         if pattern:
-            matches = self.word_filter.filter_words(pattern)
-            status_text = f"Selected 1 of {len(matches)} items" if matches else "No matches found"
+            matches = self.word_filter.filter_words(pattern, exact_length=self.exact_length_match)
+            mode_text = " (exact length)" if self.exact_length_match else ""
+            status_text = f"Selected 1 of {len(matches)} items{mode_text}" if matches else f"No matches found{mode_text}"
         else:
             # Show all loaded words when no pattern entered
             matches = self.word_filter.get_combined_wordlist()
             status_text = f"Showing all {len(matches)} words loaded"
 
+        # Sort matches by length (shortest to longest), then alphabetically for ties
+        matches = sorted(matches, key=lambda w: (len(w), w.lower()))
+
         # Populate results
         for word in matches:
             self.results_listbox.insert(tk.END, word)
-        if matches:
+        
+        # Restore selection if the word is still in the list
+        if selected_word and selected_word in matches:
+            index = matches.index(selected_word)
+            self.results_listbox.selection_set(index)
+            self.results_listbox.see(index)
+            status_text = f"Selected {index + 1} of {len(matches)} items{mode_text if pattern else ''}"
+        elif matches:
             self.results_listbox.selection_set(0)
+            self.results_listbox.see(0)
+            status_text = f"Selected 1 of {len(matches)} items{mode_text if pattern else ''}"
+        
         # Update status bar
         self.status_bar.config(text=status_text)
             

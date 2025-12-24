@@ -22,7 +22,8 @@ class SettingsWindow:
             # Create a new window
             self.window = tk.Toplevel(tk_parent)
             self.window.title("Settings")
-            self.window.geometry("900x600")
+            self.window.geometry("600x500")
+            self.window.minsize(600, 500)
             self.window.configure(bg='#f0f0f0')
             self.window.resizable(True, True)
             
@@ -57,17 +58,38 @@ class SettingsWindow:
         self.rate_scale = None
         
         self.setup_ui()
-        
-        # Show wordbank settings by default
-        self.show_wordbank_settings()
+        # Show general settings by default
+        self.show_general_settings()
+        # Bind Ctrl+R to restart app in settings window
+        self.window.bind('<Control-r>', lambda e: self.on_restart_app())
+        self.window.bind('<Control-R>', lambda e: self.on_restart_app())
+
+    def on_restart_app(self, event=None):
+        """Restart the application and close all windows (main and settings)"""
+        import subprocess, sys, os
+        # Start the new process first
+        if getattr(sys, 'frozen', False):
+            subprocess.Popen([sys.executable])
+        else:
+            subprocess.Popen([sys.executable] + sys.argv)
+        # Then close windows
+        self.window.destroy()
+        if hasattr(self.app, 'root') and self.app.root.winfo_exists():
+            self.app.root.destroy()
         
     def center_window(self):
         """Center the window on the parent (only for non-embedded mode)"""
         if not self.embedded:
             self.window.update_idletasks()
-            x = (self.window.winfo_screenwidth() // 2) - (900 // 2)
-            y = (self.window.winfo_screenheight() // 2) - (600 // 2)
-            self.window.geometry(f"900x600+{x}+{y}")
+            self.tk_parent.update_idletasks()
+            parent_x = self.tk_parent.winfo_x()
+            parent_y = self.tk_parent.winfo_y()
+            parent_width = self.tk_parent.winfo_width()
+            parent_height = self.tk_parent.winfo_height()
+            # Position slightly offset from parent's top-left to avoid being too far left/up
+            x = parent_x + 50
+            y = parent_y + 50
+            self.window.geometry(f"600x400+{x}+{y}")
         
     def setup_ui(self):
         """Create the main settings UI with sidebar navigation"""
@@ -82,18 +104,18 @@ class SettingsWindow:
             )
             title_label.pack(pady=(20, 10))
         
-        # Main container
+        # Main container using grid layout
+        self.window.grid_rowconfigure(0, weight=1)
+        self.window.grid_columnconfigure(0, weight=1)
+
         main_frame = tk.Frame(self.window, bg='#f0f0f0')
-        if self.embedded:
-            main_frame.pack(fill='both', expand=True, padx=20, pady=10)
-        else:
-            main_frame.pack(fill='both', expand=True, padx=10, pady=10)
-        
+        main_frame.grid(row=0, column=0, sticky='nsew', padx=10, pady=(10,0))
+
         # Left sidebar for navigation
         sidebar_frame = tk.Frame(main_frame, bg='#e0e0e0', width=200)
         sidebar_frame.pack(side='left', fill='y', padx=(0, 10))
         sidebar_frame.pack_propagate(False)
-        
+
         # Sidebar title
         sidebar_title = tk.Label(
             sidebar_frame,
@@ -103,10 +125,10 @@ class SettingsWindow:
             pady=15
         )
         sidebar_title.pack(fill='x')
-        
+
         # Navigation buttons
         self.nav_buttons = {}
-        
+
         # General Settings (first in list)
         self.nav_buttons['general'] = tk.Button(
             sidebar_frame,
@@ -120,7 +142,7 @@ class SettingsWindow:
             padx=20
         )
         self.nav_buttons['general'].pack(fill='x', pady=2)
-        
+
         # Wordbank Settings
         self.nav_buttons['wordbank'] = tk.Button(
             sidebar_frame,
@@ -134,7 +156,7 @@ class SettingsWindow:
             padx=20
         )
         self.nav_buttons['wordbank'].pack(fill='x', pady=2)
-        
+
         # Capture Settings
         self.nav_buttons['capture'] = tk.Button(
             sidebar_frame,
@@ -148,25 +170,19 @@ class SettingsWindow:
             padx=20
         )
         self.nav_buttons['capture'].pack(fill='x', pady=2)
-        
+
         # Right content area
         self.content_frame = tk.Frame(main_frame, bg='#f0f0f0')
         self.content_frame.pack(side='right', fill='both', expand=True)
-        
-        # Bottom buttons (only for popup mode)
-        if not self.embedded:
-            button_frame = tk.Frame(self.window, bg='#f0f0f0')
-            button_frame.pack(fill='x', padx=10, pady=(0, 10))
-            
-            close_btn = tk.Button(
-                button_frame,
-                text="Close",
-                command=self.window.destroy,
-                font=('Arial', 10),
-                padx=20,
-                pady=5
-            )
-            close_btn.pack(side='right')
+
+
+        # No global bottom button frame; wordlists button will be added only on Wordbank tab
+
+    def open_wordlists_folder(self):
+        import os
+        # Get absolute path to wordlists folder
+        wordlists_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'wordlists'))
+        os.startfile(wordlists_path)
         
     def clear_content(self):
         """Clear the content frame"""
@@ -237,10 +253,10 @@ class SettingsWindow:
         # ).pack(anchor='w', padx=(25, 0))
                 
     def show_wordbank_settings(self):
-        """Show wordbank settings panel with embedded controls"""
+        """Show wordbank settings panel with embedded controls and Open Wordlists Folder button"""
         self.clear_content()
         self.set_active_button('wordbank')
-        
+
         # New implementation using the panel class
         wordbank_panel = WordbankSettingsPanel(self.content_frame, self.app)
         wordbank_panel.pack(fill='both', expand=True)

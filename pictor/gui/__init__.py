@@ -1,5 +1,5 @@
 # GUI Components
-from .word_matcher import WordMatcherWindow
+from .main.main_window import WordMatcherWindow
 from .capture_settings import CaptureSettingsWindow
 
 __all__ = ['WordMatcherWindow', 'CaptureSettingsWindow']
