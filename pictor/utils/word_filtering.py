@@ -16,7 +16,7 @@ class WordFilter:
         self.selected_files = self._load_selected_files()
         
         # Load combined word list
-        self.word_set = set()
+        self.word_dict = {}  # lower: original
         self.word_list = []
         self._load_all_wordlists()
         
@@ -67,20 +67,22 @@ class WordFilter:
     
     def _load_all_wordlists(self):
         """Load words from all selected wordlist files"""
-        self.word_set = set()
+        self.word_dict = {}
         
         for filename in self.selected_files:
             file_path = os.path.join(self.wordlists_folder, filename)
             if os.path.exists(file_path):
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
-                        words = [line.strip().lower() for line in f if line.strip()]
-                        self.word_set.update(words)
+                        for line in f:
+                            word = line.strip()
+                            if word:
+                                self.word_dict[word.lower()] = word
                 except Exception as e:
                     print(f"Error loading {filename}: {e}")
         
-        # Convert to sorted list
-        self.word_list = sorted(list(self.word_set))
+        # Convert to sorted list of originals
+        self.word_list = sorted(self.word_dict.values())
     
     def get_wordlist_info(self):
         """Get information about available wordlists"""
@@ -167,21 +169,23 @@ class WordFilter:
     
     def add_user_word(self, word):
         """Add a word to the user's custom wordlist"""
-        word = word.strip().lower()
-        if not word:
+        original_word = word.strip()
+        word_lower = original_word.lower()
+        if not original_word:
             return False
             
-        if word in self.word_set:
+        if word_lower in self.word_dict:
             return False  # Word already exists
             
-        # Add to user words file
+        # Add to in-memory dict
+        self.word_dict[word_lower] = original_word
+        self.word_list = sorted(self.word_dict.values())
+        
+        # Rewrite the entire file sorted
         try:
-            with open(self.user_words_file, 'a', encoding='utf-8') as f:
-                f.write(word + '\n')
-            
-            # Update in-memory sets
-            self.word_set.add(word)
-            self.word_list = sorted(list(self.word_set))
+            with open(self.user_words_file, 'w', encoding='utf-8') as f:
+                for w in self.word_list:
+                    f.write(w + '\n')
             return True
             
         except Exception as e:
@@ -191,30 +195,19 @@ class WordFilter:
     def remove_user_word(self, word):
         """Remove a word from the user's custom wordlist"""
         word = word.strip().lower()
-        if not word or word not in self.word_set:
+        if not word or word not in self.word_dict:
             return False
             
         try:
-            # Read all user words
-            user_words = set()
-            if os.path.exists(self.user_words_file):
-                with open(self.user_words_file, 'r', encoding='utf-8') as f:
-                    user_words = {line.strip().lower() for line in f if line.strip()}
+            # Remove from dict
+            del self.word_dict[word]
+            self.word_list = sorted(self.word_dict.values())
             
-            # Remove the word if it exists in user words
-            if word in user_words:
-                user_words.discard(word)
-                
-                # Rewrite the file without the word
-                with open(self.user_words_file, 'w', encoding='utf-8') as f:
-                    for w in sorted(user_words):
-                        f.write(w + '\n')
-                
-                # Reload all wordlists to update in-memory data
-                self._load_all_wordlists()
-                return True
-            
-            return False
+            # Rewrite the file
+            with open(self.user_words_file, 'w', encoding='utf-8') as f:
+                for w in self.word_list:
+                    f.write(w + '\n')
+            return True
             
         except Exception as e:
             print(f"Error removing word: {e}")

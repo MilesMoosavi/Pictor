@@ -1,11 +1,163 @@
+0d
 1d
 2d
 3d
 4d
+Africa
+America
+Antarctica
+Asia
+Australia
+BMW
+Barney
+Batman
+Big Dipper
+Black Widow
+Charlie Brown
+Cinderella
+Daffy Duck
+DanTDM
+Denis
+Disney World
+Disneyland
+Donald Duck
+Dora
+Dory
+Dr. Pepper
+Duck
+Dude Perfect
+Dunkin' Donuts
+Eiffel Tower
+England
+Europe
+Facebook
+Felix the Cat
+Ferrari
+Florida
+France
+Fred Flintstone
+Germany
+Google
+Grandayy
+HP
+Halloween
+Harry Potter
+Hawaii
+Jacksepticeye
+JaidenAnimations
+Jayingee
+Justin Bieber
+KFC
+Kirby
+KonekoKitten
+Luigi
+Mario
+Markiplier
+McDonald's
+Mega Man
+Megalodon
+Mexico
+Mickey Mouse
+Minecraft
+Minion
+Minions
+Mona Lisa
+Monstercat
+Mr. Krabs
+Mr. Potato Head
+MrBeast
+NASA
+Nemo
+Neptune
+Nickel
+Nike
+Nintendo
+North America
+North Pole
+Notre-Dame
+Olympics
+Overwatch
+Pac-Man
+Paris
+Peppa Pig
+PewDiePie
+PinkSheep
+Plankton
+PlayStation
+Pokemon
+Porky Pig
+Princess Peach
+Roblox
+Robux
+Samsung
+Santa
+Santa Clause
+Saturn
+Scooby Doo
+SeeDeng
+Shaggy
+Shrek
+Smash
+Smite
+Smosh
+Sonic
+South America
+South Pole
+Space
+Spiderman
+SpongeBob
+Starbucks
+Statue of Liberty
+Statue of Zeus
+Superman
+T-Series
+Taj Mahal
+Technoblade
+TheOdd1sOut
+Titanic
+Tix
+Tofuu
+Tom
+Tomato
+Tomorrow
+Toronto
+Totoro
+Toy
+Trap Nation
+Treasure
+Trophy
+Tsunami
+Tundra
+Turkey
+Twitter
+USA
+Umbrella
+Unicorn
+Union
+United Kingdom
+Universe
+Uranium
+Uranus
+VR
+Valentine's Day
+Venus
+Venus Flytrap
+Washington DC
+Wendy's
+West
+Wii
+Wikipedia
+Windows
+Winnie the Pooh
+Xbox
+Xylophone
+Yoshi
+YouTube
+ZephPlayz
+Zombie
 accordion
 acorn
 adult
-africa
 afro
 agario
 airplane
@@ -14,165 +166,14 @@ alien
 alligator
 alone
 alphabet
-america
 among us
 angel
 angle
 anglerfish
 angry
 animal
-anime
-ant
-antarctica
-anteater
-antman
-ape
-applause
-apple
-apples
-aquarium
-argument
-arm
-armadillo
-asia
-asparagus
-asteroid
-astronaut
-attic
-australia
-avocado
-axe
-baby
-baby yoda
-backpack
-bacon
-badge
-bag
-baker
-balance
-bald
-bald eagle
-ball
-balloon
-banana
-banjo
-bank
-banker
-barber
-barney
-baseball
-basketball
-bat
-bath
-bathroom
-bathtub
-batman
-battleaxe
-beach
-beachball
-bear
-beard
-beats
-beatsaber
-bed
-bedroom
-bee
-beetle
-bell
-bench
-bible
-big
-big dipper
-bigfoot
-bike
-bird
-biscuit
-black
-black hole
-black widow
-blanket
-bleach
-blizzard
-blobfish
-block
-blue
-blueberry
-bmw
-boat
-bomb
-bone
-book
-bookshelf
-bottle
-bounce
-bow
-bowser
-box
-boy
-bracelet
-brachiosaurus
-brain
-branch
-breakfast
-breeze
-brick
-bridge
-broccoli
-brownie
-bubble bath
-bucket
-buckle
-bug
-builder's club
-building
-bulldozer
-bullet
-bumble bee
-bunny
-burger
-burger king
-burn
-bus
-bus stop
-butter
-butterfly
-button
-cabbage
-cake
-calculator
-calendar
-call of duty
-camel
-camera
-can
-candle
-candy
-cannon
-canoe
-cap
-cape
-captain america
-car
-car accident
-caramel
-carbon
-card
-carpet
-carrot
-carry
-cashier
-castle
-cat
-catapult
-cauliflower
-cave
-ceiling fan
-cello
-chain saw
-chair
-charge
-charlie brown
-chase
+axolotl
+cabin
 cheese
 cheesecake
 cheetah
@@ -189,12 +190,12 @@ chlorine
 chocolate
 chocolate bar
 church
-cinderella
 circle
 circus tent
 city
 clarinet
 claw
+clear
 cliff
 climb
 clipboard
@@ -243,15 +244,13 @@ cupid
 curtain
 customer
 daddy longlegs
-daffy duck
 dance
-dantdm
 daughter
 day
 dead
+death
 deer
 deliver
-denis
 desert
 desk
 diamond
@@ -260,8 +259,6 @@ dinner
 dinosaur
 dirt
 disco
-disney world
-disneyland
 dna
 doctor
 dodo
@@ -272,16 +269,12 @@ dollar
 dolphin
 domino
 domino's
-donald duck
 donkey
 donkey kong
 donut
 door
-dora
-dory
 doughnut
 dove
-dr. pepper
 dragon
 drain
 drawer
@@ -292,10 +285,7 @@ drill
 drink
 drive
 drums
-duck
-dude perfect
 dumbbell
-dunkin' donuts
 eagle
 ear
 earmuffs
@@ -309,7 +299,6 @@ eel
 egg
 eggman
 eggplant
-eiffel tower
 electric eel
 electric guitar
 electricity
@@ -318,13 +307,13 @@ elephant
 elevator
 elixir
 employee
-england
 envelope
+Epikrika
 equals
 equator
 escalator
-europe
 event horizon
+excavator
 exercise
 explosion
 eye
@@ -332,7 +321,6 @@ eyeball
 eyelash
 eyes
 face
-facebook
 fade
 falcon
 fall
@@ -344,10 +332,8 @@ farm
 farmer
 fast food
 fat
-felix the cat
 fence
 fencing
-ferrari
 ferret
 ferris wheel
 fidget spinner
@@ -364,7 +350,6 @@ flag
 flamingo
 flashlight
 float
-florida
 flour
 flower
 flute
@@ -376,13 +361,14 @@ football
 forest
 fork
 fountain
+fourth of july
 frame
-fred flintstone
 freezer
 french horn
 freshwater
 fridge
 fries
+frisbee
 frog
 frown
 fruit
@@ -395,7 +381,6 @@ gardens of babylon
 gas
 gauntlet
 gears
-germany
 geyser
 ghost
 gingerbread man
@@ -413,11 +398,9 @@ goggles
 gold
 gong
 goofy
-google
 goose
 gorilla
 grade
-grandayy
 grape
 grapefruit
 grapes
@@ -439,7 +422,6 @@ hair
 hairbrush
 hairdryer
 half-life
-halloween
 hammer
 hammerhead shark
 hand
@@ -447,15 +429,14 @@ hanukkah
 harmonica
 harp
 harpoon
-harry potter
 hat
-hawaii
 headless horseman
 headphones
 heart
 heater
 heaven
 hedgehog
+helicopter
 hexagon
 highway
 hill
@@ -473,7 +454,6 @@ hot dog
 hotel
 house
 hoverboard
-hp
 hula hoop
 human
 hummingbird
@@ -497,12 +477,9 @@ iron man
 isopod
 jacket
 jackhammer
-jacksepticeye
-jaidenanimations
 jail
 japan
 jar
-jayingee
 jell-o
 jellyfish
 jerry
@@ -512,7 +489,6 @@ judge
 juice
 junk
 jupiter
-justin bieber
 kale
 karambit
 kazoo
@@ -520,10 +496,8 @@ ketchup
 key
 keyboard
 keyhole
-kfc
 king
 kingdom
-kirby
 kit kat
 kitten
 knee
@@ -531,7 +505,6 @@ knife
 knight
 knuckles
 koala
-konekokitten
 ladybug
 lake
 lamborghini
@@ -558,6 +531,7 @@ lettuce
 library
 lid
 lift
+light
 lightbulb
 lighthouse of alexandria
 lightning
@@ -575,7 +549,6 @@ lobster
 lock
 locker
 lollipop
-luigi
 lunch
 mac
 magic
@@ -593,7 +566,6 @@ manta ray
 map
 marble
 marine
-mario
 marker
 marry
 mars
@@ -602,16 +574,13 @@ marshmello
 mask
 match
 math
-mcdonald's
 meat
 medal
-mega man
+megaphone
 mercury
 mermaid
 mesa
 meteor
-mexico
-mickey mouse
 microphone
 microscope
 microsoft
@@ -619,16 +588,12 @@ microwave
 milk
 milkman
 milkshake
-minecraft
-minion
 minivan
 mirror
 mitten
-mona lisa
 money
 monitor
 monkey
-monstercat
 moon
 moose
 morning
@@ -641,38 +606,26 @@ mouse
 mousetrap
 mouth
 movie
-mr. krabs
-mr. potato head
-mrbeast
 muffin
 mummy
 music
 nail
 narwhal
-nasa
 necklace
-nemo
 neodymium
 neon
-neptune
 nest
 neutron
 new year's eve
 niagara falls
-nickel
 night
 nightmare
-nike
 ninja
-nintendo
 nitrogen
 noob
 noodle
 north
-north america
-north pole
 nose
-notre-dame
 number
 nurse
 nut
@@ -683,7 +636,6 @@ octagon
 octopus
 oil
 old
-olympics
 onion
 orange
 orange juice
@@ -694,10 +646,8 @@ ostrich
 outlet
 oven
 overflow
-overwatch
 owl
 oxygen
-pac-man
 pacifier
 package
 page
@@ -710,7 +660,6 @@ panda
 pants
 paper
 parachute
-paris
 parrot
 party
 patrick
@@ -726,12 +675,11 @@ peas
 pen
 pencil
 pentagon
-peppa pig
 pepper
 pepsi
+person
 pet
 peter pan
-pewdiepie
 phone
 piano
 pickaxe
@@ -748,25 +696,22 @@ ping
 ping pong
 pink
 pink panther
-pinksheep
 pirate
 pitchfork
 pizza
 pizza hut
 plains
 planet
-plankton
 plant
 plate
 platinum
 play
 playground
-playstation
+pliers
 pluto
 plutonium
 poison
 poke
-pokemon
 polar bear
 police
 policeman
@@ -776,14 +721,13 @@ popcorn
 popeye
 popsicle
 porcupine
-porky pig
 post office
 potassium
 potato
+present
 president
 prince
 princess
-princess peach
 printer
 prism
 proton
@@ -797,6 +741,7 @@ purse
 puzzle
 pwn
 pyramid
+pyramid of giza
 quarter
 queen
 queen elizabeth
@@ -813,6 +758,7 @@ rain
 rainbow
 raincoat
 raindrop
+rainforest
 rake
 ramp
 rat
@@ -832,9 +778,7 @@ road
 robber
 robin
 robin hood
-roblox
 robot
-robux
 rock
 roll
 roly poly
@@ -849,19 +793,15 @@ running
 sad
 salad
 salute
-samsung
 sand
 sand castle
-santa
-santa clause
-saturn
+sandbox
 savanna
 saw
 saxophone
 scarecrow
 school
 school bus
-scooby doo
 scream
 screen
 screw
@@ -871,9 +811,7 @@ seabird
 seahorse
 seal
 search
-seedeng
 shadow
-shaggy
 shark
 sharpener
 sheep
@@ -887,7 +825,6 @@ shoelace
 shoulder
 shovel
 shower
-shrek
 shrimp
 shrink
 sick
@@ -916,9 +853,7 @@ slitherio
 slug
 small
 smile
-smite
 smoke
-smosh
 snail
 snake
 snickers
@@ -937,27 +872,22 @@ solar system
 solid
 solve
 son
-sonic
 sound
 south
-south america
-south pole
-space
 spade
 spaghetti
 sparta
 speak
 sphere
 spider
-spiderman
 spiderweb
 spinosaurus
 spiral
 sponge
-spongebob
 spoon
 spork
 sports car
+spotify
 spring
 sprinkler
 sprite
@@ -970,12 +900,9 @@ stairs
 stand
 standing
 star
-starbucks
 starfish
 starfruit
 statue
-statue of liberty
-statue of zeus
 stick
 stinger
 stinkbug
@@ -998,7 +925,6 @@ sunrise
 sunset
 sunspot
 superball
-superman
 supernova
 supreme
 surgeon
@@ -1008,7 +934,6 @@ swan
 sweater
 sweets
 sword
-t-series
 t. rex
 table
 tablet
@@ -1018,8 +943,8 @@ tadpole
 taiga
 tail
 tails
-taj mahal
 talk
+tankmeme
 tape measurer
 tarantula
 taser
@@ -1030,7 +955,6 @@ tea
 teacher
 teal
 tears
-technoblade
 teen
 teepee
 teeth
@@ -1041,7 +965,6 @@ tentacle
 tesla coil
 text
 thanos
-theodd1sout
 thief
 thunderstorm
 tic tac toe
@@ -1053,15 +976,10 @@ timebomb
 tin
 tire
 tissue
-titanic
 titanium
-tix
 toast
 toe
-tofuu
 toilet
-tom
-tomato
 tongue
 tooth
 toothbrush
@@ -1072,7 +990,6 @@ tornado
 tortoise
 toucan
 tower
-toy
 tractor
 traffic
 traffic light
@@ -1081,10 +998,8 @@ trailer
 train
 train station
 trampoline
-trap nation
 trash
 treadmill
-treasure
 tree
 treehouse
 triangle
@@ -1093,49 +1008,32 @@ triceratops
 tricycle
 trip
 trombone
-trophy
 trowel
 truck
 trumpet
-tsunami
 tuba
 tumbleweed
-tundra
-turkey
 turquoise
 turtle
 tutu
 twinkie
-twitter
-umbrella
 underground
 unibrow
-unicorn
-union
-universe
 uno
-uranium
-uranus
-usa
 utensils
 vacuum
-valentine's day
 vampire
 vanilla
-venus
-venus flytrap
 violet
 violin
 volcano
 volleyball
-vr
 waffle
 walking
 walking stick
 wall
 walrus
 wand
-washington dc
 water
 waterfall
 watermelon
@@ -1145,9 +1043,7 @@ weather
 wedding cake
 weevil
 weight
-wendy's
 werewolf
-west
 whale
 wheel
 white
@@ -1157,9 +1053,7 @@ wig
 wind
 windmill
 window
-windows
 winner
-winnie the pooh
 winter
 wire
 wolf
@@ -1171,35 +1065,7 @@ wormhole
 wrench
 wrinkle
 x-ray
-xbox
-xylophone
 yellow
-yoshi
-youtube
 zebra
-zephplayz
 zero
 zipper
-zombie
-epikrika
-0d
-spotify
-france
-united kingdom
-rainforest
-axolotl
-megaphone
-megalodon
-pliers
-cabin
-frisbee
-helicopter
-person
-clear
-fourth of july
-pyramid of giza
-present
-light
-tankmeme
-sandbox
-excavator

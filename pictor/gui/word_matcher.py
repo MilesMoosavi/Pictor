@@ -687,7 +687,7 @@ class WordMatcherWindow:
                 self.filter_words(word)  # Refresh results
                 self._flash_entry("green")
             else:
-                self.status_bar.config(text=f"'{word}' already exists in wordlist")
+                messagebox.showinfo("Duplicate Word", f"The word '{word}' already exists in the wordlist.")
                 self._flash_entry("red")
         
     def on_length_minus(self):

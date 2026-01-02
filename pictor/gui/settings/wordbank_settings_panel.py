@@ -134,7 +134,7 @@ class WordbankSettingsPanel(tk.Frame):
                 font=('Arial', 10),
                 padx=10,
                 pady=5,
-                command=self.app.open_wordlists_folder if hasattr(self.app, 'open_wordlists_folder') else None
+                command=self.app.open_wordlists_folder if hasattr(self.app, 'open_wordlists_folder') else lambda: None
             )
             open_wordlists_btn.pack(anchor='e', padx=20, pady=(0, 10))
             self.refresh_wordcount_display()
