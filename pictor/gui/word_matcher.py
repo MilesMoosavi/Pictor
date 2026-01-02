@@ -512,9 +512,6 @@ class WordMatcherWindow:
         )
         self.minus_btn.pack(side='left', padx=2)
         
-        # Update status bar text
-        self.status_bar.config(text=f"Ready - {self.word_filter.get_word_count()} words loaded")
-        
         # Populate initial results (show all words)
         self.filter_words('')
         
@@ -726,12 +723,10 @@ class WordMatcherWindow:
         # Determine matches: prefix or wildcard search, or show all if empty
         if pattern:
             matches = self.word_filter.filter_words(pattern, exact_length=self.exact_length_match)
-            mode_text = " (exact length)" if self.exact_length_match else ""
-            status_text = f"Selected 1 of {len(matches)} items{mode_text}" if matches else f"No matches found{mode_text}"
         else:
-            # Show all loaded words when no pattern entered
             matches = self.word_filter.get_combined_wordlist()
-            status_text = f"Showing all {len(matches)} words loaded"
+        mode_text = " (exact length)" if self.exact_length_match and pattern else ""
+        status_text = f"Ready - {len(matches)} words loaded{mode_text}"
 
         # Sort matches by length (shortest to longest), then alphabetically for ties
         matches = sorted(matches, key=lambda w: (len(w), w.lower()))
@@ -745,11 +740,9 @@ class WordMatcherWindow:
             index = matches.index(selected_word)
             self.results_listbox.selection_set(index)
             self.results_listbox.see(index)
-            status_text = f"Selected {index + 1} of {len(matches)} items{mode_text if pattern else ''}"
         elif matches:
             self.results_listbox.selection_set(0)
             self.results_listbox.see(0)
-            status_text = f"Selected 1 of {len(matches)} items{mode_text if pattern else ''}"
         
         # Update status bar
         self.status_bar.config(text=status_text)
@@ -759,7 +752,6 @@ class WordMatcherWindow:
         # Refresh the current search results
         current_pattern = self.word_entry.get()
         self.filter_words(current_pattern)
-        self.status_bar.config(text=f"Wordlists updated - {self.word_filter.get_word_count()} words loaded")
     
     def run(self):
         """Start the application"""

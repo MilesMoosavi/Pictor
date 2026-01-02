@@ -30,6 +30,14 @@ class WordMatcherWindow:
         wordlists_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "wordlists")
         user_words_path = os.path.join(wordlists_folder, editable_file)
         self.word_filter = WordFilter(user_words_file=user_words_path)
+        # If user selected wordlists are stored in central settings, apply them to WordFilter
+        try:
+            selected_lists = self.settings.get('selected_wordlists', None)
+            if selected_lists:
+                self.word_filter.update_selected_wordlists(selected_lists)
+        except Exception:
+            # best-effort: don't fail startup if settings can't be applied
+            pass
 
         # Frame management
         self.current_frame = None
@@ -93,21 +101,83 @@ class WordMatcherWindow:
         # Ctrl+/ to toggle exact length matching
         self.root.bind('<Control-slash>', lambda e: self.toggle_exact_length_match())
         self.root.bind('<Control-question>', lambda e: self.toggle_exact_length_match())  # Shift+Ctrl+/
+        # Ctrl+Up to jump to first result (global bind so it works regardless of focus)
+        self.root.bind_all('<Control-Up>', lambda e: self.on_ctrl_up())
+        # Ctrl+Down to jump to last result (global bind so it works regardless of focus)
+        self.root.bind_all('<Control-Down>', lambda e: self.on_ctrl_down())
 
     def toggle_exact_length_match(self):
         """Toggle exact length matching mode"""
         self.exact_length_match = not self.exact_length_match
+        self.update_status_bar()
         # Refresh the current search results
         current_pattern = self.search_input_frame.get_word_entry().get()  # type: ignore
         self.results_display_frame.set_exact_length_match(self.exact_length_match)  # type: ignore
         self.results_display_frame.filter_words(current_pattern)  # type: ignore
 
+    def on_entry_arrow_up(self, event=None):
+        """Handle up arrow in input - navigate results list"""
+        results_listbox = self.results_display_frame.get_results_listbox()  # type: ignore
+        if results_listbox:
+            current_selection = results_listbox.curselection()
+            if current_selection:
+                current_index = current_selection[0]
+                if current_index > 0:
+                    results_listbox.selection_clear(0, tk.END)
+                    results_listbox.selection_set(current_index - 1)
+                    results_listbox.see(current_index - 1)
+            else:
+                # No selection, select last item
+                last_index = results_listbox.size() - 1
+                if last_index >= 0:
+                    results_listbox.selection_set(last_index)
+                    results_listbox.see(last_index)
+
+    def on_entry_arrow_down(self, event=None):
+        """Handle down arrow in input - navigate results list"""
+        results_listbox = self.results_display_frame.get_results_listbox()  # type: ignore
+        if results_listbox:
+            current_selection = results_listbox.curselection()
+            if current_selection:
+                current_index = current_selection[0]
+                max_index = results_listbox.size() - 1
+                if current_index < max_index:
+                    results_listbox.selection_clear(0, tk.END)
+                    results_listbox.selection_set(current_index + 1)
+                    results_listbox.see(current_index + 1)
+            else:
+                # No selection, select first item
+                if results_listbox.size() > 0:
+                    results_listbox.selection_set(0)
+                    results_listbox.see(0)
+
+    def update_status_bar(self):
+        """Update the status bar text with word count ratio and exact length indicator"""
+        count = self.word_filter.get_word_count()
+        text = f"{count} / {count} loaded"
+        if self.exact_length_match:
+            text += " (exact length)"
+        self.status_bar.config(text=text)
+
     def open_wordlists_folder(self):
         """Open the wordlists folder in file explorer"""
         import os
-        # Get absolute path to wordlists folder
-        wordlists_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'wordlists'))
-        os.startfile(wordlists_path)
+        # Compute path to package-level wordlists folder (pictor/wordlists)
+        wordlists_path = os.path.abspath(
+            os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                'wordlists'
+            )
+        )
+        # Ensure folder exists
+        try:
+            os.makedirs(wordlists_path, exist_ok=True)
+            os.startfile(wordlists_path)
+        except Exception as e:
+            try:
+                messagebox.showerror("Error", f"Unable to open wordlists folder:\n{e}")
+            except Exception:
+                print(f"Unable to open wordlists folder: {e}")
 
     def focus_search_input(self):
         """Focus the search input box (word_entry)"""
@@ -174,11 +244,13 @@ class WordMatcherWindow:
             self.word_filter,
             self.results_display_frame.filter_words,
             self.status_bar,
-            self._flash_entry
+            self._flash_entry,
+            self.on_entry_arrow_up,
+            self.on_entry_arrow_down
         )
 
         # Update status bar text
-        self.status_bar.config(text=f"Ready - {self.word_filter.get_word_count()} words loaded")
+        self.update_status_bar()
 
         # Populate initial results (show all words)
         self.results_display_frame.filter_words('')
@@ -206,6 +278,25 @@ class WordMatcherWindow:
                     results_listbox.selection_set(last_index)
                     results_listbox.see(last_index)
         return 'break'  # Prevent default behavior
+
+    def on_ctrl_up(self, event=None):
+        """Jump to the first result in the listbox"""
+        results_listbox = self.results_display_frame.get_results_listbox()  # type: ignore
+        if results_listbox and results_listbox.size() > 0:
+            results_listbox.selection_clear(0, tk.END)
+            results_listbox.selection_set(0)
+            results_listbox.see(0)
+        return 'break'
+
+    def on_ctrl_down(self, event=None):
+        """Jump to the last result in the listbox"""
+        results_listbox = self.results_display_frame.get_results_listbox()  # type: ignore
+        if results_listbox and results_listbox.size() > 0:
+            last = results_listbox.size() - 1
+            results_listbox.selection_clear(0, tk.END)
+            results_listbox.selection_set(last)
+            results_listbox.see(last)
+        return 'break'
 
     def on_entry_arrow_down(self, event=None):
         """Handle down arrow in input - navigate results list"""

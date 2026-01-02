@@ -47,15 +47,13 @@ class ResultsDisplayFrame:
         self.results_listbox.delete(0, tk.END)  # type: ignore
 
         # Determine matches: prefix or wildcard search, or show all if empty
-        mode_text = ""
+        mode_text = " (exact length)" if self.exact_length_match and pattern else ""
+        total = self.word_filter.get_word_count()
         if pattern:
             matches = self.word_filter.filter_words(pattern, exact_length=self.exact_length_match)
-            mode_text = " (exact length)" if self.exact_length_match else ""
-            status_text = f"Selected 1 of {len(matches)} items{mode_text}" if matches else f"No matches found{mode_text}"
         else:
-            # Show all loaded words when no pattern entered
             matches = self.word_filter.get_combined_wordlist()
-            status_text = f"Showing all {len(matches)} words loaded"
+        status_text = f"{len(matches)} / {total} loaded{mode_text}"
 
         # Sort matches by length (shortest to longest), then alphabetically for ties
         matches = sorted(matches, key=lambda w: (len(w), w.lower()))
@@ -69,10 +67,11 @@ class ResultsDisplayFrame:
             index = matches.index(selected_word)
             self.results_listbox.selection_set(index)  # type: ignore
             self.results_listbox.see(index)  # type: ignore
-            status_text = f"Selected {index + 1} of {len(matches)} items{mode_text if pattern else ''}"
         elif matches:
             self.results_listbox.selection_set(0)  # type: ignore
             self.results_listbox.see(0)  # type: ignore
+        # Always update the status bar to reflect the current results
+        self.status_bar.config(text=status_text)
 
     def get_results_listbox(self):
         return self.results_listbox

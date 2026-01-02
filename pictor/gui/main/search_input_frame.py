@@ -5,12 +5,14 @@ from typing import Optional
 class SearchInputFrame:
     """Search input frame component"""
 
-    def __init__(self, parent, word_filter, filter_words_callback, status_bar, flash_entry_callback):
+    def __init__(self, parent, word_filter, filter_words_callback, status_bar, flash_entry_callback, arrow_up_callback=None, arrow_down_callback=None):
         self.parent = parent
         self.word_filter = word_filter
         self.filter_words_callback = filter_words_callback
         self.status_bar = status_bar
         self.flash_entry_callback = flash_entry_callback
+        self.arrow_up_callback = arrow_up_callback
+        self.arrow_down_callback = arrow_down_callback
 
         self.word_entry: Optional[tk.Entry] = None
         self.length_label: Optional[tk.Label] = None
@@ -79,13 +81,21 @@ class SearchInputFrame:
             self.word_entry.select_range(0, tk.END)  # type: ignore
 
     def on_entry_arrow_up(self, event=None):
-        """Handle up arrow in input - navigate results list"""
-        # This will be handled by the main window or results frame
+        """Handle up arrow in input - move selection in results listbox"""
+        # If Control is held, allow global Ctrl+Up to handle the event
+        if event and getattr(event, 'state', 0) & 0x4:
+            return None
+        if self.arrow_up_callback:
+            self.arrow_up_callback()
         return 'break'
 
     def on_entry_arrow_down(self, event=None):
-        """Handle down arrow in input - navigate results list"""
-        # This will be handled by the main window or results frame
+        """Handle down arrow in input - move selection in results listbox"""
+        # If Control is held, allow global Ctrl+Down to handle the event
+        if event and getattr(event, 'state', 0) & 0x4:
+            return None
+        if self.arrow_down_callback:
+            self.arrow_down_callback()
         return 'break'
 
     def on_entry_enter(self, event=None):

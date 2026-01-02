@@ -80,16 +80,36 @@ class SettingsWindow:
     def center_window(self):
         """Center the window on the parent (only for non-embedded mode)"""
         if not self.embedded:
+            # Compute sizes and clamp to screen so dialogs never open off-screen
             self.window.update_idletasks()
             self.tk_parent.update_idletasks()
-            parent_x = self.tk_parent.winfo_x()
-            parent_y = self.tk_parent.winfo_y()
-            parent_width = self.tk_parent.winfo_width()
-            parent_height = self.tk_parent.winfo_height()
-            # Position slightly offset from parent's top-left to avoid being too far left/up
-            x = parent_x + 50
-            y = parent_y + 50
-            self.window.geometry(f"600x400+{x}+{y}")
+
+            screen_w = self.window.winfo_screenwidth()
+            screen_h = self.window.winfo_screenheight()
+
+            parent_x = max(0, self.tk_parent.winfo_x())
+            parent_y = max(0, self.tk_parent.winfo_y())
+            parent_width = max(0, self.tk_parent.winfo_width())
+            parent_height = max(0, self.tk_parent.winfo_height())
+
+            # Desired dialog size
+            desired_w = 600
+            desired_h = 400
+
+            # Clamp dimensions so dialog is never larger than the screen minus a margin
+            margin = 80
+            w = min(desired_w, max(300, screen_w - margin))
+            h = min(desired_h, max(200, screen_h - margin))
+
+            # If parent is smaller than dialog, center dialog relative to parent but keep it on-screen
+            x = parent_x + max(0, (parent_width - w) // 2)
+            y = parent_y + max(0, (parent_height - h) // 2)
+
+            # Ensure dialog is within screen bounds
+            x = max(0, min(x, screen_w - w - 10))
+            y = max(0, min(y, screen_h - h - 10))
+
+            self.window.geometry(f"{w}x{h}+{x}+{y}")
         
     def setup_ui(self):
         """Create the main settings UI with sidebar navigation"""
@@ -178,11 +198,57 @@ class SettingsWindow:
 
         # No global bottom button frame; wordlists button will be added only on Wordbank tab
 
+    def _prompt_unsaved_before_switch(self):
+        """If the current active panel has unsaved changes, prompt the user.
+
+        Returns True to continue switching, False to cancel.
+        """
+        try:
+            if self.active_panel and hasattr(self.active_panel, 'has_unsaved_changes'):
+                if self.active_panel.has_unsaved_changes():
+                    resp = messagebox.askyesnocancel(
+                        "Unsaved Changes",
+                        "You have unsaved changes in this tab. Save them before switching?"
+                    )
+                    if resp is None:
+                        # Cancel
+                        return False
+                    if resp:
+                        # Yes -> save
+                        try:
+                            if hasattr(self.active_panel, 'save_changes'):
+                                self.active_panel.save_changes()
+                        except Exception as e:
+                            messagebox.showerror("Save Error", f"Failed to save changes: {e}")
+                            return False
+                    else:
+                        # No -> discard
+                        if hasattr(self.active_panel, 'discard_changes'):
+                            try:
+                                self.active_panel.discard_changes()
+                            except Exception:
+                                pass
+        except Exception:
+            # Best-effort only
+            pass
+        return True
+
     def open_wordlists_folder(self):
         import os
-        # Get absolute path to wordlists folder
-        wordlists_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'wordlists'))
-        os.startfile(wordlists_path)
+        # Compute package-level pictor/wordlists folder path
+        wordlists_path = os.path.abspath(
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '..', 'wordlists')
+        )
+        # Normalize (in case of odd relative joins above)
+        wordlists_path = os.path.normpath(wordlists_path)
+        try:
+            os.makedirs(wordlists_path, exist_ok=True)
+            os.startfile(wordlists_path)
+        except Exception as e:
+            try:
+                messagebox.showerror("Error", f"Unable to open wordlists folder:\n{e}")
+            except Exception:
+                print(f"Unable to open wordlists folder: {e}")
         
     def clear_content(self):
         """Clear the content frame"""
@@ -199,6 +265,8 @@ class SettingsWindow:
                 
     def show_general_settings(self):
         """Show general application settings"""
+        if not self._prompt_unsaved_before_switch():
+            return
         self.clear_content()
         self.set_active_button('general')
         
@@ -254,6 +322,8 @@ class SettingsWindow:
                 
     def show_wordbank_settings(self):
         """Show wordbank settings panel with embedded controls and Open Wordlists Folder button"""
+        if not self._prompt_unsaved_before_switch():
+            return
         self.clear_content()
         self.set_active_button('wordbank')
 
@@ -358,6 +428,8 @@ class SettingsWindow:
         
     def show_capture_settings(self):
         """Show capture settings panel"""
+        if not self._prompt_unsaved_before_switch():
+            return
         self.clear_content()
         self.set_active_button('capture')
         

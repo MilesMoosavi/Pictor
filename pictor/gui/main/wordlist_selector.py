@@ -1,5 +1,6 @@
 import tkinter as tk
 from ...utils.word_filtering import WordFilter  # type: ignore
+from ...settings import SettingsManager  # type: ignore
 
 
 class WordListSelectionWindow:
@@ -171,6 +172,20 @@ class WordListSelectionWindow:
 
         # Update the main word filter
         self.word_filter.update_selected_wordlists(selected_files)
+
+        # Persist selection to application settings (if available on parent)
+        try:
+            # Prefer parent-provided SettingsManager if available
+            settings = getattr(self.parent, 'settings', None)
+            if settings is None:
+                settings = SettingsManager()
+            settings.set('selected_wordlists', selected_files)
+            # Save settings when possible
+            if hasattr(settings, 'save_settings'):
+                settings.save_settings()
+        except Exception:
+            # Best-effort only; do not block the UI on save failures
+            pass
 
         # Call the callback to refresh the main window
         if self.callback:

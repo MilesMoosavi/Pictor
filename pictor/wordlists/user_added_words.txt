@@ -1199,3 +1199,5 @@ clear
 fourth of july
 pyramid of giza
 present
+light
+tank
